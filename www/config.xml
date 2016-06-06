@@ -15,7 +15,6 @@
     <author href="http://centroclima.org" email="auguvalerio@gmail.com">
         DAI
     </author>
-
     <!--
         If you do not want any permissions to be added to your app, add the
         following tag to your config.xml; you will still have the INTERNET
@@ -102,7 +101,7 @@
     <gap:config-file platform="ios" parent="CFBundleShortVersionString">
     <string>100</string>
     </gap:config-file>
-
+	<access origin="*" />
     <!--
         Define access to external domains.
         <access />            - a blank access tag denies access to all external resources.
