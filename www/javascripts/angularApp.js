@@ -9,13 +9,419 @@ app.config(function($httpProvider) {
     $httpProvider.defaults.useXDomain = true;
 });
 
+app.factory('PouchDB', ['$http','unit','auth','$q','$rootScope',function ($http,unit,auth,$q,$rootScope) {
+	      var pouchDbFactory={};
+				var localPouchDB=undefined;
+			 	pouchDbFactory.CreatePouchDB= function()
+				{
+								localPouchDB =  new PouchDB('dummyDb')
+								localPouchDB.info().then(function (details) {
+								if(auth.isLoggedIn && auth.userId())
+								{
+											 console.log("sync local data to server");
+											 if($rootScope.IsInternetOnline){
+												 	pouchDbFactory.GetUserNotSyncUnitFromPouchDb(auth.userId());
+											 }
+								}
+								}).catch(function (err) {
+										console.log("Erro occured, Unable to create database");
+								});
+				}
+				pouchDbFactory.GetUserDataFromPouchDB=function(userId){
+							var result={
+									status:'',
+									data:{},
+									message:''
+								};
+								var pouchPromise = localPouchDB.get(userId);
+								return $q.when(pouchPromise).then(function(doc)
+								{
+															result.status='success';
+															result.data=doc;
+ 															return result;
+						    }).catch(function (err) {
+											console.log(err);
+											result.status='fail';
+											result.message=err;
+											return result;
+									});
+				} 
+				pouchDbFactory.SaveUserDataToPouchDB=function(userData){
+							var result={
+									status:'',
+									data:{},
+									message:''
+								};
+								if(userData.data!=undefined && userData.data.userData )
+								{
+																		var element=userData.data.userData;
+																		delete element["__v"];
+																		element.type="User";
+																		var pouchPromise = localPouchDB.get(element._id);
+																		return $q.when(pouchPromise).then(function(doc){
+																								doc.email=element.email;
+																								doc.image=element.image;
+																								doc.phone=element.role;
+																								doc.salt=element.salt;
+																								doc.type=element.type;
+																								doc.units=element.units;
+																								doc.username=element.username;
+																								var UpdatePouchPromise=localPouchDB.put(doc);
+																								return	$q.when(UpdatePouchPromise).then(function (res){
+																								if(res && res.ok==true) 
+																								{
+																													console.log("user data updated");
+																													result.status='success';
+																													return result;
+																								}
+																								}).catch(function (err) {
+																										console.log(err);
+																										result.status='fail';
+																										result.message=err;
+																										return result;
+																								});
+																				}).catch(function (err) {
+																							if(err.status==404){
+																									return	localPouchDB.put(element).then(function () {
+																													console.log("user data inserted");
+																													result.status='success';
+																													return result;
+																											}).catch(function (err) {
+																															result.status='fail';
+																															result.message=err;
+																															return result;
+																											});
+																							}
+																								
+																			});
+								}
+						
+				}
+				pouchDbFactory.SaveUserNotSyncUnitToPouchDB=function(userData){
+					var deferred = $q.defer();
+					var result={
+							status:'',
+							data:{},
+							message:''
+						};
+						if(userData.data!=undefined && userData.data.units )
+						{
+							
+							       var isError=false;
+										 var message='';
+											console.log("userData.data.units"+userData.data.units.length);
+										 for(var i=0;i<userData.data.units.length;i++)
+										 {
+											 		console.log("inside foreach loop");
+											 		var element=userData.data.units[i];
+											 		var editUnit=element;
+													delete element["__v"];
+													  //element.isSync=true;
+														element.type="Units";
+														console.log(element._id+" pouch "+element.PouchDBId);
+														if(element.PouchDBId && element.PouchDBId!=null && element.PouchDBId!=undefined){
+															element._id=element.PouchDBId;
+														}
+														if(element._id==undefined){
+															var dt=new Date();
+															var documentId= dt.getFullYear().toString()+dt.getMonth().toString()+dt.getDate().toString()+dt.getHours().toString()+dt.getMinutes().toString()+dt.getSeconds().toString()+dt.getMilliseconds().toString();
+															element._id=documentId;
+														}
+																	var pouchPromise = localPouchDB.get(element._id);
+															    $q.when(pouchPromise).then(function(doc){
+																						editUnit.isSync=true;
+																						doc=editUnit;
+																						var UpdatePouchPromise=localPouchDB.put(doc);
+																						$q.when(UpdatePouchPromise).then(function (res){
+																						if(res && res.ok==true) 
+																						{
+																											console.log("unit data updated ");
+																											editUnit.isSync=true;
+																											delete
+																											unit.update(editUnit._id, auth.userId(), editUnit).then(function(unitN)
+																											{
+																													console.log("User unit updated to server="+editUnit._id);
+																											});
+																						}
+																						}).catch(function (err) {
+																								isError=true;
+																								message=err;
+																								console.log(err)
+																						});
+																		}).catch(function (err) {
+																			console.log("error while finding"+err);
+																					 if(err.status==404){
+																								localPouchDB.put(element).then(function () {
+																									  	console.log("unit inserted");
+																											editUnit.isSync=true;
+																											delete editUnit["_id"];
+																											delete editUnit["type"];
+																											unit.update(editUnit._id, auth.userId(), editUnit).then(function(unitN)
+																											{
+																													console.log("User unit updated to server="+editUnit._id);
+																											});
+																									}).catch(function (err) {
+																									    	console.log(err);
+																												message=err;
+																												isError=true;
+																									});
+																					 }
+																						
+																	});	
+										 }
+										if(!isError)
+										{
+														result.status="success";
+														result.message=message;
+														deferred.resolve(result);
+    												return deferred.promise;
+													
+										}
+										else{
+															result.status="success";
+															deferred.resolve(result);
+    											  	return deferred.promise;
+										}
+										
+										
+					  }
+  			}
+				pouchDbFactory.GetUserNotSyncUnitFromPouchDb	= function(userId)
+				{
+						var result={
+							status:'',
+							data:{},
+							message:''
+						};
+						function mapFunctionTypeUnit(doc) {
+							if((doc.isSync==false && doc.type=="Unit")){
+									emit([doc._id,doc.isSync]);
+							}
+						}
+						var pouchPromise = localPouchDB.query(mapFunctionTypeUnit,{include_docs: true});
+						return $q.when(pouchPromise).then(function(recordList){
+							 if(recordList)
+							 {
+											 					result.status='success';
+																if(recordList.rows.length>0)
+																{
+																			for (i = 0; i < recordList.rows.length; i++) { 
+																										var	element=recordList.rows[i].doc;
+																										var documentId=recordList.rows[i].doc._id;
+																										var documentRevKey=recordList.rows[i].doc._rev;
+																											element.isSync=true;
+																											delete element["_id"];
+																											delete element["type"];
+																											unit.SyncUserUnits(element,auth.userId()).error(function(error){
+																													console.log(error);
+																											}).then(function(data){
+																													localPouchDB.get(documentId)
+																													.then(function(doc){
+																																				doc._rev=documentRevKey;
+																																				doc.isSync=true;
+																																				localPouchDB.put(doc);
+																																			
+																																				}).catch(function (err) {
+																																							console.log(err);
+																																				});
+																													})
+																													.catch(function (err) {
+																																					console.log(err);
+																													});
+																			}
+																}
+																else{
+																		result.data=[];
+																}
+																return result;
+
+							 }
+						}).catch(function (err) {
+															result.status='fail';
+															result.message=err;
+															return result
+						 });
+
+				};
+				pouchDbFactory.AddUnit	= function(newUnit,userId)
+				{
+						var result={
+							status:'',
+							data:{},
+							message:''
+						};
+						var dt=new Date();
+						var documentId= dt.getFullYear().toString()+dt.getMonth().toString()+dt.getDate().toString()+dt.getHours().toString()+dt.getMinutes().toString()+dt.getSeconds().toString()+dt.getMilliseconds().toString();
+						newUnit._id=documentId;
+						newUnit.isSync=false;
+						newUnit.type="Unit";
+						newUnit.user=userId;
+						newUnit.PouchDBId=documentId;
+						var pouchPromise = localPouchDB.put(newUnit);
+						return $q.when(pouchPromise).then(function(data){
+						if(data && data.ok==true)
+						{
+													result.status='success';
+													result.data=newUnit;
+													return result;
+						}
+						else{
+													result.status='fail';
+													result.message=data;
+													return result
+						}
+						}).catch(function (err) {
+															result.status='fail';
+															result.message=err;
+															return result
+						});
+				};
+				pouchDbFactory.EditUnit	= function(editUnit,userId)
+				{
+						var result={
+							status:'',
+							data:{},
+							message:''
+						};
+						editUnit.isSync=false;
+						editUnit.type="Unit";
+						editUnit.user=userId;
+					  
+						var pouchPromise = localPouchDB.get(editUnit._id);
+						return $q.when(pouchPromise).then(function(doc){
+													doc=editUnit;
+													var UpdatePouchPromise=localPouchDB.put(doc);
+													return $q.when(UpdatePouchPromise).then(function (res){
+													if(res && res.ok==true) 
+													{
+																	  result.status='success';
+																		result.data=editUnit;
+																		return result;
+													}
+													else{
+															result.status='fail';
+															result.message=res;
+															return result
+													}
+													}).catch(function (err) {
+															result.status='fail';
+															result.message=err;
+															return result
+													});
+									}).catch(function (err) {
+															result.status='fail';
+															result.message=err;
+															return result
+							});
+
+				}
+				
+			  pouchDbFactory.DeleteUnit	= function(unitId,userId)
+				{
+						var result={
+							status:'',
+							data:{},
+							message:''
+						};
+						var pouchPromise = localPouchDB.get(unitId);
+						return $q.when(pouchPromise).then(function(doc){
+							if(doc)
+							{						
+													doc.isSync=false;
+													//doc._deleted = true;
+													doc.isDeleted=true;
+													var deletePouchPromise=localPouchDB.put(doc);
+													return $q.when(deletePouchPromise).then(function (res){
+													if(res && res.ok==true) 
+													{
+																	  result.status='success';
+																		return result;
+													}
+													else{
+															result.status='fail';
+															result.message=res;
+															return result
+													}
+																	
+														
+													}).catch(function (err) {
+															result.status='fail';
+															result.message=err;
+															return result
+													});
+							}
+						});
+				}
+				pouchDbFactory.GetUnit	= function(unitId,userId)
+				{
+						var result={
+							status:'',
+							data:{},
+							message:''
+						};
+						var pouchPromise = localPouchDB.get(unitId);
+						return $q.when(pouchPromise).then(function(doc)
+							{
+									  if(doc)
+										{
+												 result.status='success';
+												 result.data=doc;
+												 return result;
+																
+										}
+								}).catch(function (err) {
+															result.status='fail';
+															result.message=err;
+															return result
+													});
+				}
+				pouchDbFactory.GetAllUserUnit	= function(userId)
+				{
+						var result={
+							status:'',
+							data:{},
+							message:''
+						};
+						function mapFunctionTypeUnit(doc) {
+							if((doc.type=="Unit" && doc.isDeleted==false)){
+									emit([doc._id,doc.isSync]);
+							}
+						}
+						//var pouchPromise = localPouchDB.allDocs({include_docs: true,attachments: true,type:'Unit',user:userId});
+						var pouchPromise = localPouchDB.query(mapFunctionTypeUnit,{include_docs: true});
+						return $q.when(pouchPromise).then(function(recordList){
+							 if(recordList)
+							 {
+											 					result.status='success';
+																if(recordList.rows.length>0)
+																{
+																			result.data = recordList.rows.map(function (row) {
+    																					return row.doc;
+																			 });
+																}
+																else{
+																		result.data=[];
+																}
+																return result;
+
+							 }
+						}).catch(function (err) {
+															result.status='fail';
+															result.message=err;
+															return result
+						 });
+
+				};
+			return pouchDbFactory;
+}]);
+
 // Socket Factory service
 app.factory('socket', ['socketFactory',
     function(socketFactory) {
         return socketFactory({
             prefix: '',
-            ioSocket: io.connect('https://coffeecloud.centroclima.org')
-           // ioSocket: io.connect('https://coffeecloud.centroclima.org:3000')
+            ioSocket: io.connect('https://coffeecloud.centroclima.org/')
+           // ioSocket: io.connect('https://localhost:3000')
         });
     }
 ]);
@@ -38,16 +444,20 @@ app.directive('onlyNum', function() {
     };
 });
 
-app.controller('MainCtrl',['$scope','posts', 'auth', 'widget',
-function($scope, posts, auth, widget){
+app.controller('MainCtrl',['$scope','posts', 'auth', 'widget','PouchDB',
+function($scope, posts, auth, widget,PouchDB){
+
+
 	$scope.isLoggedIn = auth.isLoggedIn;
 	$scope.currentUser = auth.currentUser;
 	// Get all widget
 	widget.getAll().then(function(data)
    	{
    		$scope.widget = data;
+			 console.log("widgetData="+JSON.stringify($scope.widget));
    	});
-	
+		 	//Create the pouchDB if not Exist in Local when the app is run.otherwise sync the local data to server;
+			PouchDB.CreatePouchDB();
 }]);
 
 // Services for widget
@@ -92,8 +502,8 @@ app.controller('AuthCtrl', [
 '$state',
 'auth',
 '$window',
-'$timeout',
-function($scope, $state, auth,$window,$timeout){
+'$timeout','PouchDB',
+function($scope, $state, auth,$window,$timeout,PouchDB){
   $scope.user = {};
   
   $scope.register = function(){
@@ -111,8 +521,43 @@ function($scope, $state, auth,$window,$timeout){
   $scope.logIn = function(){
     auth.logIn($scope.user).error(function(error){
       $scope.error = error;
-    }).then(function(){
-      $state.go('home');
+    }).then(function(data){
+			//region added code for saving user data to pouchDB, after saving ***Note need to add code for sync all data too, move to home			
+			PouchDB.SaveUserDataToPouchDB(data).then(function(result){
+						if(result.status=='fail')
+						{
+								$scope.error = result.message;
+								alert("Error occured while Sync, Error:"+result.message);
+								$state.go('home');
+						}
+						else if(result.status=='success')
+						{
+							$state.go('home');
+						}
+				});
+			// PouchDB.SaveUserDataToPouchDB(data).then(function(result){
+			// 			if(result.status=='fail')
+			// 			{
+			// 					$scope.error = result.message;
+			// 					alert("Error occured while Sync, Error:"+result.message);
+			// 					$state.go('home');
+			// 			}
+			// 			else if(result.status=='success')
+			// 			{
+			// 				   PouchDB.SaveUserNotSyncUnitToPouchDB(data).then(function(result){
+			// 							if(result.status=='fail')
+			// 							{
+			// 									$scope.error = result.message;
+			// 									alert("Error occured while Sync, Error:"+result.message);
+			// 									$state.go('home');
+			// 							}
+			// 							else if(result.status=='success')
+			// 							{
+			// 								$state.go('home');
+			// 							}
+			// 					});
+			// 			}
+			// 	});
     });
   };
   // Tech - 12 jan
@@ -732,6 +1177,8 @@ function($scope, $state, auth, localStorageService, socket, unit, user, methods,
         
         
     };
+    
+    
     
 }]);
 
@@ -1373,8 +1820,8 @@ function ($scope, auth, socket, user,Upload,$base64) {
 
 }]);
 
-app.controller('ProfileCtrl',['$http','$scope', 'auth', 'unit', 'user',
-function($http, $scope, auth, unit, user){
+app.controller('ProfileCtrl',['$http','$scope', 'auth', 'unit', 'user','PouchDB','$rootScope',
+function($http, $scope, auth, unit, user, PouchDB, $rootScope){
 	var map;
 	$scope.isLoggedIn = auth.isLoggedIn;
 	$scope.currentUser = auth.currentUser;
@@ -1383,6 +1830,9 @@ function($http, $scope, auth, unit, user){
 	var userO = {};
   
 	$scope.newUnit = {
+		PouchDBId:'',
+		isSync:false,
+		isDeleted:false,
 	  sombra: true,
 	  muestreo: false,
 		muestreoMes:[],
@@ -1462,15 +1912,45 @@ function($http, $scope, auth, unit, user){
 	   catuai: false,
 		 biologico : false,
 		 sistemico : false,
+		 contactoOptionsMonths:{
+        caldovicosa : '',
+        caldobordeles:'',
+        otrocual:'',
+      },
 		 contactoOptions:{
 			 	caldovicosa:false,
 		 		caldobordeles:false,
 		 		otrocual:false,
 		 },
+		 
+		 	biologicalOptionsMonths:{
+			 	verticiliumlecanii:'',
+		 		bacilussutillis:'',
+		 		otrocual:'',
+		 },
 		 biologicalOptions:{
 			 	verticiliumlecanii:false,
 		 		bacilussutillis:false,
 		 		otrocual:false,
+		 },
+		 sistemicoOptionsMonths:{
+        opus:'',
+        opera:'',
+        esferamax:'',
+        amistarxtra:'',
+        alto10:'',
+        silvacur:'',
+        verdadero:'',
+        otrocual:'',
+        mancuerna:'',
+        caporal:'',
+        halt:'',
+        astrostarxtra:'',
+        tutela:'',
+        halconextra:'',
+        beken:'',
+        estrobirulina:'',
+        otro:'',
 		 },
 		 sistemicoOptions:{
 			 opus:false,
@@ -1505,9 +1985,22 @@ function($http, $scope, auth, unit, user){
 		  semiduro: false,
 		  prime: false,
 		  extraprime: false
-		  }
+		  },
 	};
-	
+	$scope.MonthDropDownOptions=[
+	  {name: 'Enero',displayValue: 'Enero'},
+    {name: 'Febrero',displayValue: 'Febrero'},
+    {name: 'Marzo',displayValue: 'Marzo'},
+    {name: 'Abril',displayValue: 'Abril'},
+    {name: 'Mayo',displayValue: 'Mayo'},
+		{name: 'Junio',displayValue: 'Junio'},
+		{name: 'Julio',displayValue: 'Julio'},
+		{name: 'Agosto',displayValue: 'Agosto'},
+		{name: 'Septiembre',displayValue: 'Septiembre'},
+		{name: 'Octubre',displayValue: 'Octubre'},
+		{name: 'Noviembre',displayValue: 'Noviembre'},
+		{name: 'Diciembre',displayValue: 'Diciembre'}
+		];
 	$scope.initNewUnit=angular.copy($scope.newUnit);
 
 	$scope.editUnit = angular.copy($scope.newUnit);
@@ -1585,12 +2078,96 @@ $scope.yesNomuestreoChange=function(type)
 	(type=="newUnit")?$scope.newUnit.muestreoMes=[] : $scope.editUnit.muestreoMes=[]
 }
 
+$scope.CheckboxBasedMonthChange=function(type,optionName)
+{
+	switch (optionName) {
+		case 'contactoOptions.caldovicosa':
+						(type=="newUnit")?$scope.newUnit.fungicidas.contactoOptionsMonths.caldovicosa='' : $scope.editUnit.fungicidas.contactoOptionsMonths.caldovicosa='';
+			break;
+		case 'contactoOptions.caldobordeles':
+						(type=="newUnit")?$scope.newUnit.fungicidas.contactoOptionsMonths.caldobordeles='' : $scope.editUnit.fungicidas.contactoOptionsMonths.caldobordeles='';
+			break;
+		case 'contactoOptions.otrocual':
+						(type=="newUnit")?$scope.newUnit.fungicidas.contactoOptionsMonths.otrocual='' : $scope.editUnit.fungicidas.contactoOptionsMonths.otrocual='';
+			break;
+		case 'sistemicoOptions.opus':
+						(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.opus='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.opus='';
+			break;
+			case 'sistemicoOptions.opera':
+						(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.opera='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.opera='';
+			break;
+			case 'sistemicoOptions.esferamax':
+						(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.esferamax='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.esferamax='';
+			break;			
+			case 'sistemicoOptions.amistarxtra':
+						(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.amistarxtra='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.amistarxtra='';
+		  break;
+			case 'sistemicoOptions.alto10':
+						(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.alto10='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.alto10='';
+			break;
+	    case 'sistemicoOptions.silvacur':
+						(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.silvacur='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.silvacur='';
+			break;
+			case 'sistemicoOptions.verdadero':
+						(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.verdadero='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.verdadero='';												
+			break;
+			case 'sistemicoOptions.otrocual':
+						(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.otrocual='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.otrocual='';
+			break;
+			case 'sistemicoOptions.mancuerna':
+						(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.mancuerna='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.mancuerna='';
+			break;			
+			case 'sistemicoOptions.caporal':
+						(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.caporal='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.caporal='';
+		  break;
+			case 'sistemicoOptions.halt':
+						(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.halt='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.halt='';
+			break;
+	    case 'sistemicoOptions.astrostarxtra':
+						(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.astrostarxtra='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.astrostarxtra='';
+			break;
+			case 'sistemicoOptions.tutela':
+						(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.tutela='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.tutela='';												
+			break;
+			case 'sistemicoOptions.halconextra':
+						(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.halconextra='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.halconextra='';
+		  break;
+			case 'sistemicoOptions.beken':
+						(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.beken='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.beken='';
+			break;
+	    case 'sistemicoOptions.estrobirulina':
+						(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.estrobirulina='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.estrobirulina='';
+			break;
+			case 'sistemicoOptions.otro':
+						(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.otro='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.otro='';												
+			break;
+			case 'biologicalOptions.verticiliumlecanii':
+						(type=="newUnit")?$scope.newUnit.fungicidas.biologicalOptionsMonths.verticiliumlecanii='' : $scope.editUnit.fungicidas.biologicalOptionsMonths.verticiliumlecanii='';
+			break;
+	    case 'biologicalOptions.bacilussutillis':
+						(type=="newUnit")?$scope.newUnit.fungicidas.biologicalOptionsMonths.bacilussutillis='' : $scope.editUnit.fungicidas.biologicalOptionsMonths.bacilussutillis='';
+			break;
+			case 'biologicalOptions.otrocual':
+						(type=="newUnit")?$scope.newUnit.fungicidas.biologicalOptionsMonths.otrocual='' : $scope.editUnit.fungicidas.biologicalOptionsMonths.otrocual='';												
+			break;
+	
+		default:
+			break;
+	}
+	
+}
+
 $scope.resetFungicidasSelection=function(type,isResetfungicidasContactoOptions,isResetfungicidasBiologicalOptions,isResetSistemicOptions){
 	if(isResetfungicidasContactoOptions)
 	{
 			(type=="newUnit")?$scope.newUnit.fungicidas.contactoOptions.caldovicosa=false:$scope.editUnit.fungicidas.contactoOptions.caldovicosa=false;
 			(type=="newUnit")?$scope.newUnit.fungicidas.contactoOptions.caldobordeles=false:$scope.editUnit.fungicidas.contactoOptions.caldobordeles=false;	
 			(type=="newUnit")?$scope.newUnit.fungicidas.contactoOptions.otrocual=false:$scope.editUnit.fungicidas.contactoOptions.otrocual=false;
+
+			(type=="newUnit")?$scope.newUnit.fungicidas.contactoOptionsMonths.caldovicosa='' :$scope.editUnit.fungicidas.contactoOptionsMonths.caldovicosa='';
+			(type=="newUnit")?$scope.newUnit.fungicidas.contactoOptionsMonths.caldobordeles='' : $scope.editUnit.fungicidas.contactoOptionsMonths.caldobordeles='';
+			(type=="newUnit")?$scope.newUnit.fungicidas.contactoOptionsMonths.otrocual='' : $scope.editUnit.fungicidas.contactoOptionsMonths.otrocual='';
+
   }
 	if(isResetfungicidasBiologicalOptions)
 	{
@@ -1598,6 +2175,10 @@ $scope.resetFungicidasSelection=function(type,isResetfungicidasContactoOptions,i
 		(type=="newUnit")?$scope.newUnit.fungicidas.biologicalOptions.bacilussutillis=false:$scope.editUnit.fungicidas.biologicalOptions.bacilussutillis=false;
 		(type=="newUnit")?$scope.newUnit.fungicidas.biologicalOptions.otrocual=false:$scope.editUnit.fungicidas.biologicalOptions.otrocual=false;
 			
+		(type=="newUnit")?$scope.newUnit.fungicidas.biologicalOptionsMonths.verticiliumlecanii='' : $scope.editUnit.fungicidas.biologicalOptionsMonths.verticiliumlecanii='';
+		(type=="newUnit")?$scope.newUnit.fungicidas.biologicalOptionsMonths.bacilussutillis='' : $scope.editUnit.fungicidas.biologicalOptionsMonths.bacilussutillis='';
+		(type=="newUnit")?$scope.newUnit.fungicidas.biologicalOptionsMonths.otrocual='' : $scope.editUnit.fungicidas.biologicalOptionsMonths.otrocual='';
+
 	}
 	if(isResetSistemicOptions)
 	{
@@ -1609,84 +2190,233 @@ $scope.resetFungicidasSelection=function(type,isResetfungicidasContactoOptions,i
 			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptions.silvacur=false:$scope.editUnit.fungicidas.sistemicoOptions.silvacur=false;	
 			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptions.verdadero=false:$scope.editUnit.fungicidas.sistemicoOptions.verdadero=false;	
 			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptions.otrocual=false:$scope.editUnit.fungicidas.sistemicoOptions.otrocual=false;
-			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptions.caldovicosa=false:$scope.editUnit.fungicidas.sistemicoOptions.caldovicosa=false;
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptions.mancuerna=false:$scope.editUnit.fungicidas.sistemicoOptions.mancuerna=false;
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptions.caporal=false:$scope.editUnit.fungicidas.sistemicoOptions.caporal=false;
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptions.halt=false:$scope.editUnit.fungicidas.sistemicoOptions.halt=false;
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptions.astrostarxtra=false:$scope.editUnit.fungicidas.sistemicoOptions.astrostarxtra=false;
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptions.tutela=false:$scope.editUnit.fungicidas.sistemicoOptions.tutela=false;
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptions.halconextra=false:$scope.editUnit.fungicidas.sistemicoOptions.halconextra=false;	
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptions.beken=false:$scope.editUnit.fungicidas.sistemicoOptions.beken=false;	
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptions.estrobirulina=false:$scope.editUnit.fungicidas.sistemicoOptions.estrobirulina=false;
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptions.otro=false:$scope.editUnit.fungicidas.sistemicoOptions.otro=false;
+
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.opus='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.opus='';
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.opera='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.opera='';
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.esferamax='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.esferamax='';
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.amistarxtra='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.amistarxtra='';
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.alto10='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.alto10='';
+		  (type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.silvacur='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.silvacur='';
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.verdadero='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.verdadero='';												
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.otrocual='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.otrocual='';
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.mancuerna='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.mancuerna='';
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.caporal='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.caporal='';
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.halt='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.halt='';
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.astrostarxtra='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.astrostarxtra='';
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.tutela='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.tutela='';												
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.halconextra='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.halconextra='';
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.beken='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.beken='';
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.estrobirulina='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.estrobirulina='';
+			(type=="newUnit")?$scope.newUnit.fungicidas.sistemicoOptionsMonths.otro='' : $scope.editUnit.fungicidas.sistemicoOptionsMonths.otro='';	
+
 	}
 }
+  //Commented out as we need to read data from pouchDB only
+	   user.get($scope.user_Ided).then(function(user){
+	 	 console.log("get called");
+	 	 $scope.userO = user;
+	 	 $scope.units = $scope.userO.units;
+     });
+		
+		
+		PouchDB.GetUserDataFromPouchDB(auth.userId()).then(function(result){
+					if(result.status=='fail')
+						{
+								$scope.error = result.message;
+						}
+						else if(result.status=='success')
+						{
+								 $scope.userO = result.data;
+						}
+		});
+		//region to  get user unit from local PouchDB instead of server
+		PouchDB.GetAllUserUnit(auth.userId()).then(function(result){
+						if(result.status=='fail')
+						{
+								$scope.error = result.message;
+						}
+						else if(result.status=='success')
+						{
+							$scope.units = result.data;
+						}
+				});
+		//endregion
 
-	user.get($scope.user_Ided).then(function(user){
-		 $scope.userO = user;
-		 $scope.units = $scope.userO.units;
-    });
+
+
 	  var spanishDateTimePickerOption = {
         closeText:"Cerrar",prevText:"&#x3C;Ant",nextText:"Sig&#x3E;",currentText:"Hoy",monthNames:["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"],monthNamesShort:["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"],dayNames:["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],dayNamesShort:["dom","lun","mar","mié","jue","vie","sáb"],dayNamesMin:["D","L","M","X","J","V","S"],weekHeader:"Sm",firstDay:1,isRTL:!1,showMonthAfterYear:!1,yearSuffix:""
     }
     $( ".date-field" ).datepicker(spanishDateTimePickerOption);
     
-    $scope.update = function(){
-    user.update($scope.userO).error(function(error){
-	      $scope.error = error;
-	    }).then(function(data){
-	      $scope.message = data.data.message;
-	    });
-	  };
+    // $scope.update = function(){
+    // user.update($scope.userO).error(function(error){
+	  //     $scope.error = error;
+	  //   }).then(function(data){
+	  //     $scope.message = data.data.message;
+	  //   });
+	  // };
 	$scope.deleteUnit = function(e,id,index) {
+		//Commented out as we need to delete data from pouchDB only,that will be sync to server
+		// unit.deleteUnit(id, auth.userId()).then(function(user){
+		// 		$scope.userO.units.splice(index, 1);
+		// 		$scope.userO.units
+		// 	});
 		
-		unit.deleteUnit(id, auth.userId()).then(function(user){
-				$scope.userO.units.splice(index, 1);
-				$scope.userO.units
-			});		
+		//region to delete units in local PouchDB instead of server
+				PouchDB.DeleteUnit(id,auth.userId()).then(function(result){
+					console.log("\n result deleted="+JSON.stringify(result));
+						if(result.status=='fail')
+						{
+								$scope.error = result.message;
+								
+						}
+						else if(result.status=='success')
+						{
+									$scope.units.splice(index, 1);
+						}
+				});
+		//endregion
+
 	}
 	
 	$scope.updateUnit = function(e,id) {
 		
 		$scope.sucMsg = null;
-		unit.get(auth.userId(),id).then(function(unitD){
-			console.log(unitD);
-		
-			$scope.editUnit = unitD;
-				console.log("update unit data="+JSON.stringify($scope.editUnit));
-			$scope.updateUnitForm = function(){
-				console.log("called update="+JSON.stringify($scope.editUnit));
-				if ($scope.updateunitForm.$valid) {
-					unit.update(id, auth.userId(), $scope.editUnit).then(function(unitN){
-						user.get($scope.user_Ided).then(function(user){
-							 $scope.userO = user;
-							 $scope.units = $scope.userO.units;
-					    });
-						$scope.editUnit={};
-						console.log("return  updated data="+JSON.stringify(unitN.data));	
-						$scope.editUnit = unitN.data;
-						$scope.sucMsg = '¡Unidad Actualizada exitosamente!';
-					});
-				}
-			}
-		});
+		//Commented out as we need to update data from pouchDB only,that will be sync to server
+		// unit.get(auth.userId(),id).then(function(unitD){
+		// 	$scope.editUnit = unitD;
+		// 	$scope.updateUnitForm = function(){
+		// 		if ($scope.updateunitForm.$valid) {
+		// 		/*For sync fied ,as new record will always have sync property false until it is' sync by local db' */
+		// 			$scope.editUnit.isSync=false;
+		// 		/*Sync */
+		// 			unit.update(id, auth.userId(), $scope.editUnit).then(function(unitN){
+		// 				user.get($scope.user_Ided).then(function(user){
+		// 					 $scope.userO = user;
+		// 					 $scope.units = $scope.userO.units;
+		// 			    });
+		// 				$scope.editUnit={};
+		// 				console.log("return  updated data="+JSON.stringify(unitN.data));	
+		// 				$scope.editUnit = unitN.data;
+		// 				$scope.sucMsg = '¡Unidad Actualizada exitosamente!';
+		// 			});
+		// 		}
+		// 	}
+		// });
+
+				//region to get unit from local PouchDB instead of server
+				PouchDB.GetUnit(id, auth.userId()).then(function(result)
+				{
+								if(result.status=='fail')
+								{
+										$scope.error = result.message;
+								}
+								else if(result.status=='success')
+								{
+											$scope.editUnit = result.data;
+								}
+				});
 	}
+		$scope.updateUnitForm = function()
+		{
+				
+				if ($scope.updateunitForm.$valid) {
+
+				//Commented out as we need to update data from pouchDB only,that will be sync to server
+				/*For sync fied ,as new record will always have sync property false until it is' sync by local db' */
+					$scope.editUnit.isSync=false;
+				/*Sync */
+					// unit.update(id, auth.userId(), $scope.editUnit).then(function(unitN){
+					// 	user.get($scope.user_Ided).then(function(user){
+					// 		 $scope.userO = user;
+					// 		 $scope.units = $scope.userO.units;
+					//     });
+					// 	$scope.editUnit={};
+					// 	console.log("return  updated data="+JSON.stringify(unitN.data));	
+					// 	$scope.editUnit = unitN.data;
+					// 	$scope.sucMsg = '¡Unidad Actualizada exitosamente!';
+					// });
+
+						//region to update data in local PouchDB instead , that will be sync to server
+						PouchDB.EditUnit($scope.editUnit,auth.userId()).then(function(result)
+						{
+										if(result.status=='fail')
+										{
+												$scope.error = result.message;
+										}
+										else if(result.status=='success')
+										{
+													$scope.editUnit = result.data;
+													$scope.sucMsg = '¡Unidad Actualizada exitosamente!';
+													console.log(result.data)
+													for(var i=0 ; i< $scope.units.length; i++)
+													{
+															if( $scope.units[i]._id==$scope.editUnit._id)
+															{
+																	$scope.units[i]=$scope.editUnit;
+																	break;
+															}
+													}
+										}
+						});	
+				
+				}
+  }
 	
 	$scope.saveUnit = function(){
 
 		if ($scope.newunitForm.$valid) {
-			
+		/*For sync fied ,as new record will always have sync property false until it is' sync by local db' */
+		$scope.newUnit.isSync=false;
+		/*Sync */
+
 		$scope.newUnit.departamento = $("#departamentos option:selected").text();
 		$scope.newUnit.municipio = $("#departamentos-munis option:selected").text();
 		$scope.newUnit.lat = $('[name="lat"]').val();
 		$scope.newUnit.lng = $('[name="lng"]').val();
 		
-	    unit.create($scope.newUnit,auth.userId()).error(function(error){
-	      $scope.error = error;
-	    }).then(function(data){
-				$scope.userO.units.push(data.data);
-				$('#myModal2').modal('hide');
-						$scope.ResetNewUnit();
-		    });
-			
+			//Commented out as we need to add unit to pouchDB only,that will be sync to server
+			// unit.create($scope.newUnit,auth.userId()).error(function(error){
+	    //   $scope.error = error;
+	    // }).then(function(data){
+			// 	console.log("mongoDB written data="+JSON.stringify(data.data));
+			// 	$scope.userO.units.push(data.data);
+			// 	$('#myModal2').modal('hide');
+			// 			$scope.ResetNewUnit();
+		  //   });
+
+		//region to create unit in local PouchDB instead of server
+				PouchDB.AddUnit($scope.newUnit,auth.userId()).then(function(result){
+						if(result.status=='fail')
+						{
+								$scope.error = result.message;
+						}
+						else if(result.status=='success')
+						{
+									delete result.data["type"];
+									$scope.units.push(result.data)
+									$('#myModal2').modal('hide');
+									$scope.ResetNewUnit();
+						}
+				});
+		//endregion
 		}
 		
 	  };
   
      muni14.addDepts('departamentos');
 
-   function wait(ms){
+    function wait(ms){
    var start = new Date().getTime();
    var end = start;
    while(end < start + ms) {
@@ -1827,7 +2557,7 @@ $scope.resetFungicidasSelection=function(type,isResetfungicidasContactoOptions,i
 	
 }
 	
-	function placeMarker(location) {
+    function placeMarker(location) {
   var marker = new google.maps.Marker({
       position: location,
       draggable:true,
@@ -1841,9 +2571,13 @@ $scope.resetFungicidasSelection=function(type,isResetfungicidasContactoOptions,i
 	$scope.mapInit = function()
 	{
 		$('.map').collapse('toggle');
-		initialize();
+		console.log($rootScope.IsInternetOnline)
+		if($rootScope.IsInternetOnline){
+				initialize();
+		}
+	
 	}
-
+	console.log($scope.units);
 
 }]);
 
@@ -2273,6 +3007,24 @@ app.factory('unit', ['$http', 'auth','$window', function($http, auth, $window){
 		  });
 	};
 
+  /* for sync data */
+		o.getUserNotSyncUnit = function(userId){
+						return $http.get('https://coffeecloud.centroclima.org/getUserNotSyncUnits/'+ userId +'/units', {
+						headers: {Authorization: 'Bearer '+auth.getToken()}
+						}).success(function(data){
+									return data;
+						});
+		 };
+
+		o.SyncUserUnits = function(unit, id){
+							return $http.post('https://coffeecloud.centroclima.org/SyncUserUnits/'+ id +'/units', unit,{
+									headers: {Authorization: 'Bearer '+auth.getToken()}
+							}).success(function(data){
+									return data;
+						});
+		};
+
+
   return o;
 }]);
 
@@ -2387,7 +3139,8 @@ app.factory('gallo', ['$http', 'auth', function($http, auth){
 }]);
 
 //pre loader animation controller
-app.run(function($rootScope){
+app.run(function($rootScope,$window){
+	
     $rootScope
         .$on('$stateChangeStart', 
             function(event, toState, toParams, fromState, fromParams){ 
@@ -2403,6 +3156,18 @@ app.run(function($rootScope){
 	  			setTimeout(function(){ $('body').removeClass('loaded') },500);
 
         });
+		//code added for internet availability		
+		$rootScope.IsInternetOnline = navigator.onLine;		
+		$window.addEventListener("offline", function () {
+        $rootScope.$apply(function() {
+          $rootScope.IsInternetOnline = false;
+        });
+      }, false);
+      $window.addEventListener("online", function () {
+        $rootScope.$apply(function() {
+          $rootScope.IsInternetOnline = true;
+        });
+      }, false);
 
 });
 

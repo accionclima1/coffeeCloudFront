@@ -20,7 +20,7 @@
 	<script src="bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
 	<script src="javascripts/validator.min.js"></script>
 	<script src="javascripts/muni14.min.js"></script>
-	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.js"></script>
 	<script src="bower_components/angular-socket-io/socket.min.js"></script>
 	<script src="bower_components/snapjs/snap.min.js"></script>
 	<script src="bower_components/angular-snap/angular-snap.min.js"></script>
@@ -28,6 +28,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/danialfarid-angular-file-upload/12.2.13/ng-file-upload.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-base64/2.0.5/angular-base64.min.js"></script>
 	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD4UV7wDq9fK_rQsP8yZqYwW-mnnz0J1Lc"></script>
+	<script src="javascripts/pouchdb-6.1.2.min.js"></script>
 	<script src="javascripts/angularApp.js"></script>
 	
 	<script src="javascripts/easy-weather-keys.js"></script>
@@ -4289,7 +4290,7 @@
 													        </div>
 													        <div class="col-xs-6">
 													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Pachecolis"> Pachecolis
+													            <input type="checkbox" ng-model="editUnit.variedad.Pachecolis"> Pache Colis
 													          </label>
 													        </div>
 																		<div class="col-xs-6">
@@ -4352,7 +4353,7 @@
 												</div>
 													<div class="col-xs-12">
 													<div class="form-group">
-														<label for="selCoffeProducessOptions">Tipo de café que produce options?</label>
+														<label for="selCoffeProducessOptions">Tipo de café que produce?</label>
 														<select class="form-control" id="selCoffeProducessOptions" multiple="true" ng-model="editUnit.typeOfCoffeProducessOptionSelected">
 															<option ng-repeat="option in typesOfCoffeSelectionOptions" value="{{option.name}}">{{option.displayValue}}</option>
 														</select>
@@ -4403,10 +4404,10 @@
 												</div>
 												<div class="col-xs-12">
 													<div class="form-group">
-														<input type="text"
-														      class="form-control"
-														      placeholder="¿En que mes lo realiza?"
-														      ng-model="editUnit.muestreoMes"></input>
+														<label>¿En que mes lo realiza?</label>
+															<select class="form-control" id="selmuestreoOptions" multiple="true" ng-model="editUnit.muestreoMes">
+																<option ng-repeat="option in MonthDropDownOptions" value="{{option.name}}">{{option.displayValue}}</option>
+														</select>
 													</div>
 												</div>
 												<div class="col-xs-12">
@@ -4414,49 +4415,49 @@
 														<p>¿Fertiliza el suelo?</p>
 														  <div class="radio">
 															  <label>
-															    <input type="radio" name="fertilizaSuelo" ng-value="true" ng-model="editUnit.fertilizaSuelo" checked>
+															    <input type="radio" ng-change=yesNofertilizaSueloChange('editUnit') name="fertilizaSuelo" ng-value="true" ng-model="editUnit.fertilizaSuelo" >
 															    Si
 															  </label>
 															</div>
 															<div class="radio">
 															  <label>
-															    <input type="radio" name="fertilizaSuelo" ng-value="false" ng-model="editUnit.fertilizaSuelo">
+															    <input type="radio" ng-change=yesNofertilizaSueloChange('editUnit') name="fertilizaSuelo" ng-value="false" ng-model="editUnit.fertilizaSuelo" checked>
 															    No
 															  </label>
 														</div>
 													</div>
 												</div>
-												<div class="col-xs-12">
+												<div class="col-xs-12" ng-show="editUnit.fertilizaSuelo">
 													<div class="form-group">
-														<input type="text"
-														      class="form-control"
-														      placeholder="¿En que mes lo realiza?"
-														      ng-model="editUnit.fertilizaSueloMes"></input>
+														<label>¿En que mes lo realiza?</label>
+															<select class="form-control" id="selfertilizaOptions" multiple="true" ng-model="editUnit.fertilizaSueloMes">
+																<option ng-repeat="option in MonthDropDownOptions" value="{{option.name}}">{{option.displayValue}}</option>
+														</select>
 													</div>
 												</div>
 												<div class="col-xs-12">
 													<div class="form-group">
-														<p>¿Fertiliza el follaje?</p>
+														<p>¿Realiza aplicaciones Foliares?</p>
 														  <div class="radio">
 															  <label>
-															    <input type="radio" name="fertilizaFollaje" ng-value="true" ng-model="editUnit.fertilizaFollaje" checked>
+															    <input type="radio"  ng-change=yesNofertilizaFollajeChange('editUnit') name="fertilizaFollaje" ng-value="true" ng-model="editUnit.fertilizaFollaje" >
 															    Si
 															  </label>
 															</div>
 															<div class="radio">
 															  <label>
-															    <input type="radio" name="fertilizaFollaje" ng-value="false" ng-model="editUnit.fertilizaFollaje">
+															    <input type="radio" ng-change=yesNofertilizaFollajeChange('editUnit')  name="fertilizaFollaje" ng-value="false" ng-model="editUnit.fertilizaFollaje" checked>
 															    No
 															  </label>
 														</div>
 													</div>
 												</div>
-												<div class="col-xs-12">
+												<div class="col-xs-12" ng-show="editUnit.fertilizaFollaje">
 													<div class="form-group">
-														<input type="text"
-														      class="form-control"
-														      placeholder="¿En que mes lo realiza?"
-														      ng-model="editUnit.fertilizaFollajeMes"></input>
+														<label>¿En que mes lo realiza?</label>
+															<select class="form-control" id="selfertilizaFollajeOptions" multiple="true" ng-model="editUnit.fertilizaFollajeMes">
+																<option ng-repeat="option in MonthDropDownOptions" value="{{option.name}}">{{option.displayValue}}</option>
+														</select>
 													</div>
 												</div>
 												<div class="col-xs-12">
@@ -4464,24 +4465,24 @@
 														<p>¿Realiza enmiendas de suelo?</p>
 														  <div class="radio">
 															  <label>
-															    <input type="radio" name="enmiendasSuelo" ng-value="true" ng-model="editUnit.enmiendasSuelo" checked>
+															    <input type="radio" ng-change=yesNoenmiendasSueloChange('editUnit') name="enmiendasSuelo" ng-value="true" ng-model="editUnit.enmiendasSuelo" >
 															    Si
 															  </label>
 															</div>
 															<div class="radio">
 															  <label>
-															    <input type="radio" name="enmiendasSuelo" ng-value="false" ng-model="editUnit.enmiendasSuelo">
+															    <input type="radio" ng-change=yesNoenmiendasSueloChange('editUnit') ng-value="false" ng-model="editUnit.enmiendasSuelo" checked>
 															    No
 															  </label>
 														</div>
 													</div>
 												</div>
-												<div class="col-xs-12">
+												<div class="col-xs-12" ng-show="editUnit.enmiendasSuelo">
 													<div class="form-group">
-														<input type="text"
-														      class="form-control"
-														      placeholder="¿En que mes lo realiza?"
-														      ng-model="editUnit.enmiendasSueloMes"></input>
+														<label>¿En que mes lo realiza?</label>
+															<select class="form-control" id="enmiendasSueloOptions" multiple="true" ng-model="editUnit.enmiendasSueloMes">
+																<option ng-repeat="option in MonthDropDownOptions" value="{{option.name}}">{{option.displayValue}}</option>
+														</select>
 													</div>
 												</div>
 												<div class="col-xs-12">
@@ -4489,7 +4490,7 @@
 														<p>¿Realiza manejo de tejido?</p>
 														  <div class="radio">
 															  <label>
-															    <input type="radio" name="manejoTejido" ng-value="true" ng-model="editUnit.manejoTejido" checked>
+															    <input type="radio" ng-change=yesNomanejoTejidoChange('editUnit') name="manejoTejido" ng-value="true" ng-model="editUnit.manejoTejido" >
 															    Si
 															  </label>
 															</div>
@@ -4501,12 +4502,12 @@
 														</div>
 													</div>
 												</div>
-												<div class="col-xs-12">
+												<div class="col-xs-12" ng-show="editUnit.manejoTejido">
 													<div class="form-group">
-														<input type="text"
-														      class="form-control"
-														      placeholder="¿En que mes lo realiza?"
-														      ng-model="editUnit.manejoTejidoMes"></input>
+														<label>¿En que mes lo realiza?</label>
+															<select class="form-control" id="manejoTejidoOptions" multiple="true" ng-model="editUnit.manejoTejidoMes">
+																<option ng-repeat="option in MonthDropDownOptions" value="{{option.name}}">{{option.displayValue}}</option>
+														</select>
 													</div>
 												</div>
 												<div class="col-xs-12">
@@ -4564,25 +4565,25 @@
 														<p>¿Verifica la calidad del Agua?</p>
 														  <div class="radio">
 															  <label>
-															    <input type="radio" name="verificaAgua" ng-value="true" ng-model="editUnit.verificaAgua" checked>
+															    <input type="radio" ng-change=yesNoVerificiaAcquaChange('editUnit')  name="verificaAgua" ng-value="true" ng-model="editUnit.verificaAgua" >
 															    Si
 															  </label>
 															</div>
 															<div class="radio">
 															  <label>
-															    <input type="radio" name="verificaAgua" ng-value="false" ng-model="editUnit.verificaAgua">
+															    <input type="radio" ng-change=yesNoVerificiaAcquaChange('editUnit')  name="verificaAgua" ng-value="false" ng-model="editUnit.verificaAgua" checked>
 															    No
 															  </label>
 														</div>
 													</div>
 												</div>
-												<div class="col-xs-12">
+												<div class="col-xs-12" ng-show="editUnit.verificaAgua">
 													<div class="form-group">
 														<div class="row">
 														<label class="col-xs-12">¿Que tipo de verificación?</label>
 															<div class="col-xs-6">
 													          <label>
-													            <input type="checkbox" ng-model="editUnit.verificaAguaTipo.ph"> Ph
+													            <input type="checkbox"  ng-model="editUnit.verificaAguaTipo.ph"> Ph
 													          </label>
 													        </div>
 													        <div class="col-xs-6">
@@ -4590,9 +4591,7 @@
 													            <input type="checkbox" ng-model="editUnit.verificaAguaTipo.dureza"> Dureza
 													          </label>
 													        </div>									
-													        
 														</div>
-														
 													</div>
 												</div>
 												<div class="col-xs-12">
@@ -4655,30 +4654,29 @@
 												</div>
 																								
 												
-												<!-- new questions --> 
-												<div class="col-xs-12">
+														<div class="col-xs-12">
 													<div class="form-group">
 														<p>¿Utiliza la extra de nitrógeno?</p>
 														  <div class="radio">
 															  <label>
-															    <input type="radio" name="nitrogeno" ng-value="true" ng-model="editUnit.nitrogeno" >
+															    <input type="radio" name="nitrogeno" ng-change="yesNoNitrogenoChange('editUnit')" ng-value="true" ng-model="editUnit.nitrogeno" >
 															    Si
 															  </label>
 															</div>
 															<div class="radio">
 															  <label>
-															    <input type="radio" name="nitrogeno" ng-value="false" ng-model="editUnit.nitrogeno">
+															    <input type="radio" name="nitrogeno"  ng-value="false" ng-model="editUnit.nitrogeno" checked>
 															    No
 															  </label>
 														</div>
 													</div>
 												</div>
-												<div class="col-xs-12">
+												<div class="col-xs-12" ng-show="editUnit.nitrogeno">
 													<div class="form-group">
-														<input type="text"
-														      class="form-control"
-														      placeholder="¿En que mes lo realiza?"
-														      ng-model="editUnit.nitrorealiza"></input>
+														<label>¿En que mes lo realiza?</label>
+															<select class="form-control" id="nitrorealizaOptions" multiple="true" ng-model="editUnit.nitrorealiza">
+																<option ng-repeat="option in MonthDropDownOptions" value="{{option.name}}">{{option.displayValue}}</option>
+														</select>
 													</div>
 												</div>
 												
@@ -4718,7 +4716,7 @@
 													</div>
 												</div>
 												
-												<div class="col-xs-12">
+												<div class="col-xs-12" ng-show="editUnit.nitrogeno">
 													<div class="form-group">
 														<input type="text"
 														      class="form-control"
@@ -4731,547 +4729,635 @@
 														<p>¿Aplica fungicidas para control de enfermedades?</p>
 														  <div class="radio">
 															  <label>
-															    <input type="radio" name="enfermedades" ng-value="true" ng-model="editUnit.enfermedades" checked>
+															    <input type="radio" name="enfermedades" ng-change="yesNoSelectionChange('editUnit')" ng-value="true" ng-model="editUnit.enfermedades" >
 															    Si
 															  </label>
 															</div>
 															<div class="radio">
 															  <label>
-															    <input type="radio" name="enfermedades" ng-value="false" ng-model="editUnit.enfermedades">
+															    <input type="radio" name="enfermedades" ng-change="yesNoSelectionChange('editUnit')" ng-value="false" ng-model="editUnit.enfermedades" checked>
 															    No
 															  </label>
 														</div>
 													</div>
 												</div>
-												<div class="col-xs-12">
+													<div class="col-xs-12" ng-show="editUnit.enfermedades">
 													<div class="form-group">
-													
-														<!-- <input type="text"
-														      class="form-control"
-														      placeholder="¿Qué tipo de fungicidas aplica?"
-														      ng-model="editUnit.fungicidas"></input> -->
 														      <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.fungicidas.contacto"> Contacto
+													           <label>
+													            <input type="checkbox" value="Contacto" ng-change="FungicidOptionsChange('editUnit','contacto')" ng-model="editUnit.fungicidas.contacto"> Contacto
 													          </label>
 													        </div>
 													        <div class="col-xs-6">
 													          <label>
-													            <input type="checkbox" ng-value="true" ng-model="editUnit.fungicidas.biologico"> Biológico
-													          </label>
-													        </div>									
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.fungicidas.sistemico"> Sistémico
+													            <input type="checkbox" value="Sistémico" ng-change="FungicidOptionsChange('editUnit','sistemico')" ng-model="editUnit.fungicidas.sistemico"> Sistémico
 													          </label>
 													        </div>
-																										
+																	 <div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" value="Biológico" ng-change="FungicidOptionsChange('editUnit','biologico')" ng-model="editUnit.fungicidas.biologico"> Biológico
+													          </label>
+													        </div>
 													</div>
 												</div>
+
 												<div class="col-xs-12" ng-show="editUnit.fungicidas.contacto" >
 													<div class="form-group">
-																<div class="row">
-														<label class="col-xs-12">Contacto</label>
-															<div class="col-xs-6">
+															<div class="row">
+																	<label class="col-xs-12">Contacto Fungicidas</label>
+																	<div class="clearfix" ></div>
+																	<div class="col-xs-6">
 													          <label>
-													            <input type="checkbox" value=" Caldo Vicosa" ng-model="editUnit.fungicidas.contactoOptions.caldovicosa"> Caldo Vicosa
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','contactoOptions.caldovicosa')" value=" Caldo Vicosa" ng-model="editUnit.fungicidas.contactoOptions.caldovicosa"> Caldo Vicosa
 													          </label>
-													          <div class="form-group" ng-if="editUnit.fungicidas.contactoOptions.caldovicosa">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="editUnit.cyprosoldate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
+													           <div class="form-group" ng-if="editUnit.fungicidas.contactoOptions.caldovicosa" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.contactoOptionsMonths.caldovicosa">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
 													        </div>
-													        <div class="col-xs-6">
+																	<div class="col-xs-6">
 													          <label>
-													            <input type="checkbox" value="Caldo Bordeles" ng-model="editUnit.fungicidas.contactoOptions.caldobordeles"> Caldo Bordeles
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','contactoOptions.caldobordeles')" value="Caldo Bordeles" ng-model="editUnit.fungicidas.contactoOptions.caldobordeles"> Caldo Bordeles 
 													          </label>
-													          <div class="form-group" ng-if="editUnit.fungicidas.contactoOptions.caldobordeles">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="editUnit.atemidate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>									
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Otro ¿Cuál" ng-model="editUnit.fungicidas.contactoOptions.otrocual"> Otro ¿Cuál
-													          </label>
-													          
+													           <div class="form-group" ng-if="editUnit.fungicidas.contactoOptions.caldobordeles" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.contactoOptionsMonths.caldobordeles">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
 													        </div>
-														</div>
-														</div>
+																		<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','contactoOptions.otrocual')" value="Otro ¿Cuál" ng-model="editUnit.fungicidas.contactoOptions.otrocual"> Otro ¿Cuál 
+													          </label>
+													           <div class="form-group" ng-if="editUnit.fungicidas.contactoOptions.otrocual">
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.contactoOptionsMonths.otrocual">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+																	<div class="clearfix" ></div>
+															 </div>
 													</div>
+												</div>
+
 												<div class="col-xs-12" ng-show="editUnit.fungicidas.sistemico">
 													<div class="form-group">
-																<div class="row">
-														<label class="col-xs-12">Sistémico</label>
+														<div class="row">
+															<label class="col-xs-12">Sistémico Fungicidas</label>
+															<div class="clearfix" ></div>
+																	<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','sistemicoOptions.opus')" value="Opus" ng-model="editUnit.fungicidas.sistemicoOptions.opus"> Opus
+													          </label>
+																		 <div ng-if="editUnit.fungicidas.sistemicoOptions.opus">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.sistemicoOptionsMonths.opus">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+																<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','sistemicoOptions.opera')" value="Opera" ng-model="editUnit.fungicidas.sistemicoOptions.opera">Opera
+													          </label>
+																		<div  ng-if="editUnit.fungicidas.sistemicoOptions.opera">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.sistemicoOptionsMonths.opera">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+
+																<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','sistemicoOptions.esferamax')" value="Esfera Max" ng-model="editUnit.fungicidas.sistemicoOptions.esferamax">Esfera Max
+													          </label>
+																		<div ng-if="editUnit.fungicidas.sistemicoOptions.esferamax">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.sistemicoOptionsMonths.esferamax">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+													        
+																 <div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','sistemicoOptions.amistarxtra')" value="Amistar Xtra" ng-model="editUnit.fungicidas.sistemicoOptions.amistarxtra">Amistar Xtra
+													          </label>
+																		<div  ng-if="editUnit.fungicidas.sistemicoOptions.amistarxtra">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.sistemicoOptionsMonths.amistarxtra">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+													        
+														 <div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','sistemicoOptions.alto10')" value="Alto 10" ng-model="editUnit.fungicidas.sistemicoOptions.alto10">Alto 10
+													          </label>
+																		<div ng-if="editUnit.fungicidas.sistemicoOptions.alto10">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.sistemicoOptionsMonths.alto10">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+													        
+															
 															<div class="col-xs-6">
 													          <label>
-													            <input type="checkbox" value="Opus" ng-model="editUnit.fungicidas.sistemicoOptions.opus"> Opus
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','sistemicoOptions.silvacur')" value="Silvacur" ng-model="editUnit.fungicidas.sistemicoOptions.silvacur">Silvacur
 													          </label>
-													           <div class="form-group" ng-if="editUnit.fungicidas.sistemicoOptions.opus">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="editUnit.esferadate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
+																		<div  ng-if="editUnit.fungicidas.sistemicoOptions.silvacur">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.sistemicoOptionsMonths.silvacur">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
 													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Opera" ng-model="editUnit.fungicidas.sistemicoOptions.opera">Opera
-													          </label>
-													           <div class="form-group" ng-if="editUnit.fungicidas.sistemicoOptions.opera">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="editUnit.operadate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Esfera Max" ng-model="editUnit.fungicidas.sistemicoOptions.esferamax">Esfera Max
-													          </label>
-													          <div class="form-group"  ng-if="editUnit.fungicidas.sistemicoOptions.esferamax">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="editUnit.opusdate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Amistar Xtra" ng-model="editUnit.fungicidas.sistemicoOptions.amistarxtra">Amistar Xtra
-													          </label>
-													          
-													          <div class="form-group"  ng-if="editUnit.fungicidas.sistemicoOptions.amistarxtra">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="editUnit.sopranodate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Alto 10" ng-model="editUnit.fungicidas.sistemicoOptions.alto10">Alto 10
-													          </label>
-													          <div class="form-group"  ng-if="editUnit.fungicidas.sistemicoOptions.alto10">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="editUnit.hexalondate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Silvacur" ng-model="editUnit.fungicidas.sistemicoOptions.silvacur">Silvacur
-													          </label>
-													          <div class="form-group"  ng-if="editUnit.fungicidas.sistemicoOptions.silvacur">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="editUnit.propicondate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Verdadero" ng-model="editUnit.fungicidas.sistemicoOptions.verdadero">Verdadero
-													          </label>
-													          <div class="form-group"  ng-if="editUnit.fungicidas.sistemicoOptions.verdadero">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="editUnit.hexildate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>									
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Otro ¿Cuál" ng-model="editUnit.fungicidas.sistemicoOptions.otrocual"> Otro ¿Cuál
-													          </label>
 													        </div>
 
-																	<div class="col-xs-6">
+															<div class="col-xs-6" >
 													          <label>
-													            <input type="checkbox" value="Mancuerna" ng-model="editUnit.fungicidas.sistemicoOptions.mancuerna"> Mancuerna
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','sistemicoOptions.verdadero')" value="Verdadero" ng-model="editUnit.fungicidas.sistemicoOptions.verdadero">Verdadero
 													          </label>
-													          <div class="form-group"  ng-if="editUnit.fungicidas.sistemicoOptions.mancuerna">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="editUnit.otrosdate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
+																		<div ng-if="editUnit.fungicidas.sistemicoOptions.verdadero">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.sistemicoOptionsMonths.verdadero">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
 													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Caporal" ng-model="editUnit.fungicidas.sistemicoOptions.caporal"> Caporal
-													          </label>
-													          <div class="form-group"  ng-if="editUnit.fungicidas.sistemicoOptions.caporal">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
 													        </div>
-																	<div class="col-xs-6">
+															
+															<div class="col-xs-6" >
 													          <label>
-													            <input type="checkbox" value="Halt" ng-model="editUnit.fungicidas.sistemicoOptions.halt"> Halt
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','sistemicoOptions.otrocual')" value="Otro ¿Cuál" ng-model="editUnit.fungicidas.sistemicoOptions.otrocual"> Otro ¿Cuál
 													          </label>
-													          <div class="form-group"  ng-if="editUnit.fungicidas.sistemicoOptions.halt">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
+																		<div  ng-if="editUnit.fungicidas.sistemicoOptions.otrocual">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.sistemicoOptionsMonths.otrocual">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
 													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Astrostar Xtra" ng-model="editUnit.fungicidas.sistemicoOptions.astrostarxtra"> Astrostar Xtra
-													          </label>
-													          
-													          <div class="form-group"  ng-if="editUnit.fungicidas.sistemicoOptions.astrostarxtra">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													          
-													          
 													        </div>
-																	<div class="col-xs-6">
+													        
+															
+															<div class="col-xs-6">
 													          <label>
-													            <input type="checkbox" value="Tutela" ng-model="editUnit.fungicidas.sistemicoOptions.tutela"> Tutela
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','sistemicoOptions.mancuerna')" value="Mancuerna" ng-model="editUnit.fungicidas.sistemicoOptions.mancuerna"> Mancuerna
 													          </label>
-													          
-													          <div class="form-group"  ng-if="editUnit.fungicidas.sistemicoOptions.tutela">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
+																		<div  ng-if="editUnit.fungicidas.sistemicoOptions.mancuerna">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.sistemicoOptionsMonths.mancuerna">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
 													        </div>
-																	<div class="col-xs-6">
+													      </div>
+															
+															<div class="col-xs-6">
 													          <label>
-													            <input type="checkbox" value="Halcon Extra" ng-model="editUnit.fungicidas.sistemicoOptions.halconextra"> Halcon Extra
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','sistemicoOptions.caporal')" value="Caporal" ng-model="editUnit.fungicidas.sistemicoOptions.caporal"> Caporal
 													          </label>
-													          
-													           <div class="form-group"  ng-if="editUnit.fungicidas.sistemicoOptions.halconextra">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
+																		<div  ng-if="editUnit.fungicidas.sistemicoOptions.caporal">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.sistemicoOptionsMonths.caporal">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
 													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Beken" ng-model="editUnit.fungicidas.sistemicoOptions.beken">Beken
-													          </label>
-													          
-													          <div class="form-group"  ng-if="editUnit.fungicidas.sistemicoOptions.beken">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Estrobirulina" ng-model="editUnit.fungicidas.sistemicoOptions.estrobirulina"> Estrobirulina
-													          </label>
-													          <div class="form-group"  ng-if="editUnit.fungicidas.sistemicoOptions.estrobirulina">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Otro" ng-model="editUnit.fungicidas.sistemicoOptions.otro">Otro
-													          </label>
-													          
-													          <div class="form-group"  ng-if="editUnit.fungicidas.sistemicoOptions.otro">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
 													        </div>
 
+															<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','sistemicoOptions.halt')" value="Halt" ng-model="editUnit.fungicidas.sistemicoOptions.halt"> Halt
+													          </label>
+																		<div  ng-if="editUnit.fungicidas.sistemicoOptions.halt">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.sistemicoOptionsMonths.halt">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+															
+															<div class="col-xs-6" >
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','sistemicoOptions.astrostarxtra')" value="Astrostar Xtra" ng-model="editUnit.fungicidas.sistemicoOptions.astrostarxtra"> Astrostar Xtra
+													          </label>
+																		 <div  ng-if="editUnit.fungicidas.sistemicoOptions.astrostarxtra">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.sistemicoOptionsMonths.astrostarxtra">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+															
+															<div class="col-xs-6" >
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','sistemicoOptions.tutela')" value="Tutela" ng-model="editUnit.fungicidas.sistemicoOptions.tutela"> Tutela
+													          </label>
+																		<div  ng-if="editUnit.fungicidas.sistemicoOptions.tutela">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.sistemicoOptionsMonths.tutela">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+													        
+															
+															<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','sistemicoOptions.halconextra')" value="Halcon Extra" ng-model="editUnit.fungicidas.sistemicoOptions.halconextra"> Halcon Extra
+													          </label>
+																		<div ng-if="editUnit.fungicidas.sistemicoOptions.halconextra">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.sistemicoOptionsMonths.halconextra">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+													        
+															
+															<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','sistemicoOptions.beken')" value="Beken" ng-model="editUnit.fungicidas.sistemicoOptions.beken">Beken
+													          </label>
+																		<div ng-if="editUnit.fungicidas.sistemicoOptions.beken">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.sistemicoOptionsMonths.beken">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+													        
+															
+															<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','sistemicoOptions.estrobirulina')" value="Estrobirulina" ng-model="editUnit.fungicidas.sistemicoOptions.estrobirulina"> Estrobirulina
+													          </label>
+																		<div  ng-if="editUnit.fungicidas.sistemicoOptions.estrobirulina">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.sistemicoOptionsMonths.estrobirulina">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+													        
+															
+															<div class="col-xs-6" ng-class="editUnit.fungicidas.sistemicoOptions.otro ? 'col-xs-6' : 'col-xs-12'">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','sistemicoOptions.otro')" value="Otro" ng-model="editUnit.fungicidas.sistemicoOptions.otro">Otro
+													          </label>
+																		<div  ng-if="editUnit.fungicidas.sistemicoOptions.otro">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.sistemicoOptionsMonths.otro">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+														 </div>
 														</div>
-														</div>
-													</div>
+											</div>
 											 <div class="col-xs-12" ng-show="editUnit.fungicidas.biologico">
 													<div class="form-group">
-																<div class="row">
-														<label class="col-xs-12">Biológico</label>
+													  <div class="row">
+														  <label class="col-xs-12">Biológico Fungicidas</label>
+															<div class="clearfix" ></div>
+																	<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','biologicalOptions.verticiliumlecanii')" value="Verticilium Lecanii" ng-model="editUnit.fungicidas.biologicalOptions.verticiliumlecanii"> Verticilium Lecanii
+													          </label>
+																		<div  ng-if="editUnit.fungicidas.biologicalOptions.verticiliumlecanii">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.biologicalOptionsMonths.verticiliumlecanii">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+													        
+															
 															<div class="col-xs-6">
 													          <label>
-													            <input type="checkbox" value="Verticilium Lecanii" ng-model="editUnit.fungicidas.biologicalOptions.verticiliumlecanii"> Verticilium Lecanii
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','biologicalOptions.bacilussutillis')" value="Bacilus Sutillis" ng-model="editUnit.fungicidas.biologicalOptions.bacilussutillis"> Bacilus Sutillis
 													          </label>
-													          <div class="form-group"  ng-if="editUnit.fungicidas.biologicalOptions.verticiliumlecanii">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
+																		<div  ng-if="editUnit.fungicidas.biologicalOptions.bacilussutillis">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.biologicalOptionsMonths.bacilussutillis">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
 													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Bacilus Sutillis" ng-model="editUnit.fungicidas.biologicalOptions.bacilussutillis"> Bacilus Sutillis
-													          </label>
-													          <div class="form-group"  ng-if="editUnit.fungicidas.biologicalOptions.bacilussutillis">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>									
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Otro ¿Cuál" ng-model="editUnit.fungicidas.biologicalOptions.otrocual"> Otro ¿Cuál
-													          </label>
-													           <div class="form-group"  ng-if="editUnit.fungicidas.biologicalOptions.otrocual">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
 													        </div>
-														</div>
-														</div>
+															<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('editUnit','biologicalOptions.otrocual')" value="Otro ¿Cuál" ng-model="editUnit.fungicidas.biologicalOptions.otrocual"> Otro ¿Cuál
+													          </label>
+																		<div  ng-if="editUnit.fungicidas.biologicalOptions.otrocual">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="editUnit.fungicidas.biologicalOptionsMonths.otrocual">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+															<div class="clearfix" ></div>
 													</div>
+										 	</div>
+										</div>
+											 
 												
 												<div class="col-xs-12">
 													<div class="form-group">
@@ -5469,7 +5555,7 @@
 													        </div>
 													        <div class="col-xs-6">
 													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Pachecolis"> Pachecolis
+													            <input type="checkbox" ng-model="newUnit.variedad.Pachecolis"> Pache Colis
 													          </label>
 													        </div>
 																		<div class="col-xs-6">
@@ -5534,7 +5620,7 @@
 
 												<div class="col-xs-12">
 													<div class="form-group">
-														<label for="selCoffeProducessOptions">Tipo de café que produce options?</label>
+														<label for="selCoffeProducessOptions">Tipo de café que produce?</label>
 														<select class="form-control" id="selCoffeProducessOptions" multiple="true" ng-model="newUnit.typeOfCoffeProducessOptionSelected">
 															<option ng-repeat="option in typesOfCoffeSelectionOptions" value="{{option.name}}">{{option.displayValue}}</option>
 														</select>
@@ -5587,20 +5673,9 @@
 												<div class="col-xs-12" ng-show="newUnit.muestreo">
 													<div class="form-group">
 														<label>¿En que mes lo realiza?</label>
-															<select multiple class="form-control" ng-model="newUnit.muestreoMes">
-															  <option>Enero</option>
-															  <option>Febrero</option>
-															  <option>Marzo</option>
-															  <option>Abril</option>
-															  <option>Mayo</option>
-															  <option>Junio</option>
-															  <option>Julio</option>
-															  <option>Agosto</option>
-															  <option>Septiembre</option>
-															  <option>Octubre</option>
-															  <option>Noviembre</option>
-															  <option>Diciembre</option>
-															</select>
+																<select class="form-control" id="selmuestreoOptions" multiple="true" ng-model="newUnit.muestreoMes">
+																<option ng-repeat="option in MonthDropDownOptions" value="{{option.name}}">{{option.displayValue}}</option>
+														</select>
 													</div>
 												</div>
 												<div class="col-xs-12">
@@ -5623,20 +5698,9 @@
 												<div class="col-xs-12" ng-show="newUnit.fertilizaSuelo">
 													<div class="form-group">
 														<label>¿En que mes lo realiza?</label>
-															<select multiple class="form-control" ng-model="newUnit.fertilizaSueloMes">
-															  <option>Enero</option>
-															  <option>Febrero</option>
-															  <option>Marzo</option>
-															  <option>Abril</option>
-															  <option>Mayo</option>
-															  <option>Junio</option>
-															  <option>Julio</option>
-															  <option>Agosto</option>
-															  <option>Septiembre</option>
-															  <option>Octubre</option>
-															  <option>Noviembre</option>
-															  <option>Diciembre</option>
-															</select>
+																		<select class="form-control" id="selfertilizaOptions" multiple="true" ng-model="newUnit.fertilizaSueloMes">
+																<option ng-repeat="option in MonthDropDownOptions" value="{{option.name}}">{{option.displayValue}}</option>
+														</select>
 													</div>
 												</div>
 												<div class="col-xs-12">
@@ -5659,20 +5723,9 @@
 												<div class="col-xs-12" ng-show="newUnit.fertilizaFollaje">
 													<div class="form-group">
 														<label>¿En que mes lo realiza?</label>
-															<select multiple class="form-control" ng-model="newUnit.fertilizaFollajeMes">
-															  <option>Enero</option>
-															  <option>Febrero</option>
-															  <option>Marzo</option>
-															  <option>Abril</option>
-															  <option>Mayo</option>
-															  <option>Junio</option>
-															  <option>Julio</option>
-															  <option>Agosto</option>
-															  <option>Septiembre</option>
-															  <option>Octubre</option>
-															  <option>Noviembre</option>
-															  <option>Diciembre</option>
-															</select>
+																<select class="form-control" id="selfertilizaFollajeOptions" multiple="true" ng-model="newUnit.fertilizaFollajeMes">
+																<option ng-repeat="option in MonthDropDownOptions" value="{{option.name}}">{{option.displayValue}}</option>
+														</select>
 													</div>
 												</div>
 												<div class="col-xs-12">
@@ -5695,20 +5748,9 @@
 												<div class="col-xs-12" ng-show="newUnit.enmiendasSuelo">
 													<div class="form-group">
 														<label>¿En que mes lo realiza?</label>
-															<select multiple class="form-control" ng-model="newUnit.enmiendasSueloMes">
-															  <option>Enero</option>
-															  <option>Febrero</option>
-															  <option>Marzo</option>
-															  <option>Abril</option>
-															  <option>Mayo</option>
-															  <option>Junio</option>
-															  <option>Julio</option>
-															  <option>Agosto</option>
-															  <option>Septiembre</option>
-															  <option>Octubre</option>
-															  <option>Noviembre</option>
-															  <option>Diciembre</option>
-															</select>
+															<select class="form-control" id="enmiendasSueloOptions" multiple="true" ng-model="newUnit.enmiendasSueloMes">
+																<option ng-repeat="option in MonthDropDownOptions" value="{{option.name}}">{{option.displayValue}}</option>
+														</select>
 													</div>
 												</div>
 												<div class="col-xs-12">
@@ -5731,20 +5773,9 @@
 												<div class="col-xs-12" ng-show="newUnit.manejoTejido">
 													<div class="form-group">
 														<label>¿En que mes lo realiza?</label>
-															<select multiple class="form-control" ng-model="newUnit.manejoTejidoMes">
-															  <option>Enero</option>
-															  <option>Febrero</option>
-															  <option>Marzo</option>
-															  <option>Abril</option>
-															  <option>Mayo</option>
-															  <option>Junio</option>
-															  <option>Julio</option>
-															  <option>Agosto</option>
-															  <option>Septiembre</option>
-															  <option>Octubre</option>
-															  <option>Noviembre</option>
-															  <option>Diciembre</option>
-															</select>
+																<select class="form-control" id="manejoTejidoOptions" multiple="true" ng-model="newUnit.manejoTejidoMes">
+																<option ng-repeat="option in MonthDropDownOptions" value="{{option.name}}">{{option.displayValue}}</option>
+														</select>
 													</div>
 												</div>
 												<div class="col-xs-12">
@@ -5905,20 +5936,9 @@
 												<div class="col-xs-12" ng-show="newUnit.nitrogeno">
 													<div class="form-group">
 														<label>¿En que mes lo realiza?</label>
-															<select multiple class="form-control" ng-model="newUnit.nitrorealiza">
-															  <option>Enero</option>
-															  <option>Febrero</option>
-															  <option>Marzo</option>
-															  <option>Abril</option>
-															  <option>Mayo</option>
-															  <option>Junio</option>
-															  <option>Julio</option>
-															  <option>Agosto</option>
-															  <option>Septiembre</option>
-															  <option>Octubre</option>
-															  <option>Noviembre</option>
-															  <option>Diciembre</option>
-															</select>
+															<select class="form-control" id="nitrorealizaOptions" multiple="true" ng-model="newUnit.nitrorealiza">
+																<option ng-repeat="option in MonthDropDownOptions" value="{{option.name}}">{{option.displayValue}}</option>
+														</select>
 													</div>
 												</div>
 												
@@ -6016,530 +6036,604 @@
 														</div>
 													</div>
 												</div>
+												
 												<div class="col-xs-12" ng-show="newUnit.fungicidas.contacto" >
 													<div class="form-group">
-																<div class="row">
-														<label class="col-xs-12">Contacto</label>
-															<div class="col-xs-6">
+															<div class="row">
+																	<label class="col-xs-12">Contacto Fungicidas</label>
+																	<div class="clearfix" ></div>
+																	<div class="col-xs-6">
 													          <label>
-													            <input type="checkbox" value=" Caldo Vicosa" ng-model="newUnit.fungicidas.contactoOptions.caldovicosa"> Caldo Vicosa
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','contactoOptions.caldovicosa')" value=" Caldo Vicosa" ng-model="newUnit.fungicidas.contactoOptions.caldovicosa"> Caldo Vicosa
 													          </label>
-													          <div class="form-group" ng-if="newUnit.fungicidas.contactoOptions.caldovicosa">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="newUnit.cyprosoldate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Caldo Bordeles" ng-model="newUnit.fungicidas.contactoOptions.caldobordeles"> Caldo Bordeles
-													          </label>
-													          <div class="form-group" ng-if="newUnit.fungicidas.contactoOptions.caldobordeles">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="newUnit.atemidate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>									
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Otro ¿Cuál" ng-model="newUnit.fungicidas.contactoOptions.otrocual"> Otro ¿Cuál
-													          </label>
-													          
-													        </div>
-														</div>
-														</div>
-													</div>
-												<div class="col-xs-12" ng-show="newUnit.fungicidas.sistemico">
-													<div class="form-group">
-																<div class="row">
-														<label class="col-xs-12">Sistémico</label>
-															<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Opus" ng-model="newUnit.fungicidas.sistemicoOptions.opus"> Opus
-													          </label>
-													           <div class="form-group" ng-if="newUnit.fungicidas.sistemicoOptions.opus">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="newUnit.esferadate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Opera" ng-model="newUnit.fungicidas.sistemicoOptions.opera">Opera
-													          </label>
-													           <div class="form-group" ng-if="newUnit.fungicidas.sistemicoOptions.opera">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="newUnit.operadate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
+													           <div class="form-group" ng-if="newUnit.fungicidas.contactoOptions.caldovicosa" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.contactoOptionsMonths.caldovicosa">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
 													        </div>
 																	<div class="col-xs-6">
 													          <label>
-													            <input type="checkbox" value="Esfera Max" ng-model="newUnit.fungicidas.sistemicoOptions.esferamax">Esfera Max
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','contactoOptions.caldobordeles')" value="Caldo Bordeles" ng-model="newUnit.fungicidas.contactoOptions.caldobordeles"> Caldo Bordeles 
 													          </label>
-													          <div class="form-group"  ng-if="newUnit.fungicidas.sistemicoOptions.esferamax">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="newUnit.opusdate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
+													           <div class="form-group" ng-if="newUnit.fungicidas.contactoOptions.caldobordeles" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.contactoOptionsMonths.caldobordeles">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
 													        </div>
-																	<div class="col-xs-6">
+																		<div class="col-xs-6">
 													          <label>
-													            <input type="checkbox" value="Amistar Xtra" ng-model="newUnit.fungicidas.sistemicoOptions.amistarxtra">Amistar Xtra
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','contactoOptions.otrocual')" value="Otro ¿Cuál" ng-model="newUnit.fungicidas.contactoOptions.otrocual"> Otro ¿Cuál 
 													          </label>
-													          
-													          <div class="form-group"  ng-if="newUnit.fungicidas.sistemicoOptions.amistarxtra">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="newUnit.sopranodate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
+													           <div class="form-group" ng-if="newUnit.fungicidas.contactoOptions.otrocual">
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.contactoOptionsMonths.otrocual">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
 													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Alto 10" ng-model="newUnit.fungicidas.sistemicoOptions.alto10">Alto 10
-													          </label>
-													          <div class="form-group"  ng-if="newUnit.fungicidas.sistemicoOptions.alto10">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="newUnit.hexalondate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Silvacur" ng-model="newUnit.fungicidas.sistemicoOptions.silvacur">Silvacur
-													          </label>
-													          <div class="form-group"  ng-if="newUnit.fungicidas.sistemicoOptions.silvacur">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="newUnit.propicondate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Verdadero" ng-model="newUnit.fungicidas.sistemicoOptions.verdadero">Verdadero
-													          </label>
-													          <div class="form-group"  ng-if="newUnit.fungicidas.sistemicoOptions.verdadero">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="newUnit.hexildate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>									
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Otro ¿Cuál" ng-model="newUnit.fungicidas.sistemicoOptions.otrocual"> Otro ¿Cuál
-													          </label>
-													        </div>
-
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Mancuerna" ng-model="newUnit.fungicidas.sistemicoOptions.mancuerna"> Mancuerna
-													          </label>
-													          <div class="form-group"  ng-if="newUnit.fungicidas.sistemicoOptions.mancuerna">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="newUnit.otrosdate">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Caporal" ng-model="newUnit.fungicidas.sistemicoOptions.caporal"> Caporal
-													          </label>
-													          <div class="form-group"  ng-if="newUnit.fungicidas.sistemicoOptions.caporal">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Halt" ng-model="newUnit.fungicidas.sistemicoOptions.halt"> Halt
-													          </label>
-													          <div class="form-group"  ng-if="newUnit.fungicidas.sistemicoOptions.halt">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Astrostar Xtra" ng-model="newUnit.fungicidas.sistemicoOptions.astrostarxtra"> Astrostar Xtra
-													          </label>
-													          
-													          <div class="form-group"  ng-if="newUnit.fungicidas.sistemicoOptions.astrostarxtra">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													          
-													          
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Tutela" ng-model="newUnit.fungicidas.sistemicoOptions.tutela"> Tutela
-													          </label>
-													          
-													          <div class="form-group"  ng-if="newUnit.fungicidas.sistemicoOptions.tutela">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Halcon Extra" ng-model="newUnit.fungicidas.sistemicoOptions.halconextra"> Halcon Extra
-													          </label>
-													          
-													           <div class="form-group"  ng-if="newUnit.fungicidas.sistemicoOptions.halconextra">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Beken" ng-model="newUnit.fungicidas.sistemicoOptions.beken">Beken
-													          </label>
-													          
-													          <div class="form-group"  ng-if="newUnit.fungicidas.sistemicoOptions.beken">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Estrobirulina" ng-model="newUnit.fungicidas.sistemicoOptions.estrobirulina"> Estrobirulina
-													          </label>
-													          <div class="form-group"  ng-if="newUnit.fungicidas.sistemicoOptions.estrobirulina">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Otro" ng-model="newUnit.fungicidas.sistemicoOptions.otro">Otro
-													          </label>
-													          
-													          <div class="form-group"  ng-if="newUnit.fungicidas.sistemicoOptions.otro">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-
-														</div>
-														</div>
-													</div>
-											 <div class="col-xs-12" ng-show="newUnit.fungicidas.biologico">
-													<div class="form-group">
-																<div class="row">
-														<label class="col-xs-12">Biológico</label>
-															<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Verticilium Lecanii" ng-model="newUnit.fungicidas.biologicalOptions.verticiliumlecanii"> Verticilium Lecanii
-													          </label>
-													          <div class="form-group"  ng-if="newUnit.fungicidas.biologicalOptions.verticiliumlecanii">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Bacilus Sutillis" ng-model="newUnit.fungicidas.biologicalOptions.bacilussutillis"> Bacilus Sutillis
-													          </label>
-													          <div class="form-group"  ng-if="newUnit.fungicidas.biologicalOptions.bacilussutillis">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>									
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" value="Otro ¿Cuál" ng-model="newUnit.fungicidas.biologicalOptions.otrocual"> Otro ¿Cuál
-													          </label>
-													           <div class="form-group"  ng-if="newUnit.fungicidas.biologicalOptions.otrocual">
-																<label>¿Cuando los aplica?</label>
-																	<select class="form-control" ng-model="">
-																	  <option>Enero</option>
-																	  <option>Febrero</option>
-																	  <option>Marzo</option>
-																	  <option>Abril</option>
-																	  <option>Mayo</option>
-																	  <option>Junio</option>
-																	  <option>Julio</option>
-																	  <option>Agosto</option>
-																	  <option>Septiembre</option>
-																	  <option>Octubre</option>
-																	  <option>Noviembre</option>
-																	  <option>Diciembre</option>
-																	</select>
-																</div>
-													        </div>
-														</div>
-														</div>
-													</div>
-
-												<div class="col-xs-12">
-													<div class="form-group">
-														<label>¿En que mes lo realiza?</label>
-															<select multiple class="form-control" ng-model="newUnit.fungicidasmonth">
-															  <option>Enero</option>
-															  <option>Febrero</option>
-															  <option>Marzo</option>
-															  <option>Abril</option>
-															  <option>Mayo</option>
-															  <option>Junio</option>
-															  <option>Julio</option>
-															  <option>Agosto</option>
-															  <option>Septiembre</option>
-															  <option>Octubre</option>
-															  <option>Noviembre</option>
-															  <option>Diciembre</option>
-															</select>
+																	<div class="clearfix" ></div>
+															 </div>
 													</div>
 												</div>
+
+												<div class="col-xs-12" ng-show="newUnit.fungicidas.sistemico">
+													<div class="form-group">
+														<div class="row">
+															<label class="col-xs-12">Sistémico Fungicidas</label>
+															<div class="clearfix" ></div>
+																	<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','sistemicoOptions.opus')" value="Opus" ng-model="newUnit.fungicidas.sistemicoOptions.opus"> Opus
+													          </label>
+																		 <div ng-if="newUnit.fungicidas.sistemicoOptions.opus">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.sistemicoOptionsMonths.opus">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+																<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','sistemicoOptions.opera')" value="Opera" ng-model="newUnit.fungicidas.sistemicoOptions.opera">Opera
+													          </label>
+																		<div  ng-if="newUnit.fungicidas.sistemicoOptions.opera">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.sistemicoOptionsMonths.opera">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+
+																<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','sistemicoOptions.esferamax')" value="Esfera Max" ng-model="newUnit.fungicidas.sistemicoOptions.esferamax">Esfera Max
+													          </label>
+																		<div ng-if="newUnit.fungicidas.sistemicoOptions.esferamax">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.sistemicoOptionsMonths.esferamax">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+													        
+																 <div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','sistemicoOptions.amistarxtra')" value="Amistar Xtra" ng-model="newUnit.fungicidas.sistemicoOptions.amistarxtra">Amistar Xtra
+													          </label>
+																		<div  ng-if="newUnit.fungicidas.sistemicoOptions.amistarxtra">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.sistemicoOptionsMonths.amistarxtra">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+													        
+														 <div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','sistemicoOptions.alto10')" value="Alto 10" ng-model="newUnit.fungicidas.sistemicoOptions.alto10">Alto 10
+													          </label>
+																		<div ng-if="newUnit.fungicidas.sistemicoOptions.alto10">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.sistemicoOptionsMonths.alto10">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+													        
+															
+															<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','sistemicoOptions.silvacur')" value="Silvacur" ng-model="newUnit.fungicidas.sistemicoOptions.silvacur">Silvacur
+													          </label>
+																		<div  ng-if="newUnit.fungicidas.sistemicoOptions.silvacur">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.sistemicoOptionsMonths.silvacur">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+
+															<div class="col-xs-6" >
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','sistemicoOptions.verdadero')" value="Verdadero" ng-model="newUnit.fungicidas.sistemicoOptions.verdadero">Verdadero
+													          </label>
+																		<div ng-if="newUnit.fungicidas.sistemicoOptions.verdadero">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.sistemicoOptionsMonths.verdadero">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+															
+															<div class="col-xs-6" >
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','sistemicoOptions.otrocual')" value="Otro ¿Cuál" ng-model="newUnit.fungicidas.sistemicoOptions.otrocual"> Otro ¿Cuál
+													          </label>
+																		<div  ng-if="newUnit.fungicidas.sistemicoOptions.otrocual">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.sistemicoOptionsMonths.otrocual">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+													        
+															
+															<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','sistemicoOptions.mancuerna')" value="Mancuerna" ng-model="newUnit.fungicidas.sistemicoOptions.mancuerna"> Mancuerna
+													          </label>
+																		<div  ng-if="newUnit.fungicidas.sistemicoOptions.mancuerna">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.sistemicoOptionsMonths.mancuerna">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													      </div>
+															
+															<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','sistemicoOptions.caporal')" value="Caporal" ng-model="newUnit.fungicidas.sistemicoOptions.caporal"> Caporal
+													          </label>
+																		<div  ng-if="newUnit.fungicidas.sistemicoOptions.caporal">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.sistemicoOptionsMonths.caporal">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+
+															<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','sistemicoOptions.halt')" value="Halt" ng-model="newUnit.fungicidas.sistemicoOptions.halt"> Halt
+													          </label>
+																		<div  ng-if="newUnit.fungicidas.sistemicoOptions.halt">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.sistemicoOptionsMonths.halt">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+															
+															<div class="col-xs-6" >
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','sistemicoOptions.astrostarxtra')" value="Astrostar Xtra" ng-model="newUnit.fungicidas.sistemicoOptions.astrostarxtra"> Astrostar Xtra
+													          </label>
+																		 <div  ng-if="newUnit.fungicidas.sistemicoOptions.astrostarxtra">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.sistemicoOptionsMonths.astrostarxtra">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+															
+															<div class="col-xs-6" >
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','sistemicoOptions.tutela')" value="Tutela" ng-model="newUnit.fungicidas.sistemicoOptions.tutela"> Tutela
+													          </label>
+																		<div  ng-if="newUnit.fungicidas.sistemicoOptions.tutela">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.sistemicoOptionsMonths.tutela">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+													        
+															
+															<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','sistemicoOptions.halconextra')" value="Halcon Extra" ng-model="newUnit.fungicidas.sistemicoOptions.halconextra"> Halcon Extra
+													          </label>
+																		<div ng-if="newUnit.fungicidas.sistemicoOptions.halconextra">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.sistemicoOptionsMonths.halconextra">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+													        
+															
+															<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','sistemicoOptions.beken')" value="Beken" ng-model="newUnit.fungicidas.sistemicoOptions.beken">Beken
+													          </label>
+																		<div ng-if="newUnit.fungicidas.sistemicoOptions.beken">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.sistemicoOptionsMonths.beken">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+													        
+															
+															<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','sistemicoOptions.estrobirulina')" value="Estrobirulina" ng-model="newUnit.fungicidas.sistemicoOptions.estrobirulina"> Estrobirulina
+													          </label>
+																		<div  ng-if="newUnit.fungicidas.sistemicoOptions.estrobirulina">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.sistemicoOptionsMonths.estrobirulina">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+													        
+															
+															<div class="col-xs-6" ng-class="newUnit.fungicidas.sistemicoOptions.otro ? 'col-xs-6' : 'col-xs-12'">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','sistemicoOptions.otro')" value="Otro" ng-model="newUnit.fungicidas.sistemicoOptions.otro">Otro
+													          </label>
+																		<div  ng-if="newUnit.fungicidas.sistemicoOptions.otro">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.sistemicoOptionsMonths.otro">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+														 </div>
+														</div>
+											</div>
+											 <div class="col-xs-12" ng-show="newUnit.fungicidas.biologico">
+													<div class="form-group">
+													  <div class="row">
+														  <label class="col-xs-12">Biológico Fungicidas</label>
+															<div class="clearfix" ></div>
+																	<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','biologicalOptions.verticiliumlecanii')" value="Verticilium Lecanii" ng-model="newUnit.fungicidas.biologicalOptions.verticiliumlecanii"> Verticilium Lecanii
+													          </label>
+																		<div  ng-if="newUnit.fungicidas.biologicalOptions.verticiliumlecanii">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.biologicalOptionsMonths.verticiliumlecanii">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+													        
+															
+															<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','biologicalOptions.bacilussutillis')" value="Bacilus Sutillis" ng-model="newUnit.fungicidas.biologicalOptions.bacilussutillis"> Bacilus Sutillis
+													          </label>
+																		<div  ng-if="newUnit.fungicidas.biologicalOptions.bacilussutillis">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.biologicalOptionsMonths.bacilussutillis">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+															<div class="col-xs-6">
+													          <label>
+													            <input type="checkbox" ng-change="CheckboxBasedMonthChange('newUnit','biologicalOptions.otrocual')" value="Otro ¿Cuál" ng-model="newUnit.fungicidas.biologicalOptions.otrocual"> Otro ¿Cuál
+													          </label>
+																		<div  ng-if="newUnit.fungicidas.biologicalOptions.otrocual">
+													          <div class="form-group" >
+																			<label>¿Cuando los aplica?</label>
+																					<select class="form-control" ng-model="newUnit.fungicidas.biologicalOptionsMonths.otrocual">
+																						<option>Enero</option>
+																						<option>Febrero</option>
+																						<option>Marzo</option>
+																						<option>Abril</option>
+																						<option>Mayo</option>
+																						<option>Junio</option>
+																						<option>Julio</option>
+																						<option>Agosto</option>
+																						<option>Septiembre</option>
+																						<option>Octubre</option>
+																						<option>Noviembre</option>
+																						<option>Diciembre</option>
+																					</select>
+																			</div>
+													        </div>
+													        </div>
+															<div class="clearfix" ></div>
+													</div>
+										 	</div>
+										</div>
+										
 												<div class="col-xs-12">
 													<div class="form-group">
 														<input type="text"
