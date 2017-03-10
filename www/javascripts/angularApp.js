@@ -2833,9 +2833,22 @@ $scope.resetFungicidasSelection=function(type,isResetfungicidasContactoOptions,i
 	//   $scope.units = $scope.userO.units;
     // }); 
     
+    	PouchDB.GetUserDataFromPouchDB(auth.userId()).then(function(result){
+					if(result.status=='fail')
+						{
+								$scope.error = result.message;
+						}
+						else if(result.status=='success')
+						{
+								 $scope.userO = result.data;
+								 
+						}
+		});
+    
     
     	if (onlineStatus) {
 	    	
+	    	console.log('app online');
 	    	user.get($scope.user_Ided).then(function(user){
 				$scope.userO7 = user;
 				
@@ -2869,7 +2882,7 @@ $scope.resetFungicidasSelection=function(type,isResetfungicidasContactoOptions,i
 				
 			}); 
     	} else {
-	    	
+	    	console.log('app offline');
 					//region to  get user unit from local PouchDB instead of server
 			PouchDB.GetAllUserUnit(auth.userId()).then(function(result){
 							if(result.status=='fail')
@@ -2889,17 +2902,7 @@ $scope.resetFungicidasSelection=function(type,isResetfungicidasContactoOptions,i
 			//endregion
     	}
 		
-		PouchDB.GetUserDataFromPouchDB(auth.userId()).then(function(result){
-					if(result.status=='fail')
-						{
-								$scope.error = result.message;
-						}
-						else if(result.status=='success')
-						{
-								 $scope.userO = result.data;
-								 
-						}
-		});
+		
 		
 
 
