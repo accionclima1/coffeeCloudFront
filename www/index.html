@@ -30,6 +30,21 @@
 	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD4UV7wDq9fK_rQsP8yZqYwW-mnnz0J1Lc"></script>
 	<script src="javascripts/pouchdb-6.1.2.min.js"></script>
 	<script src="javascripts/angularApp.js"></script>
+	<script src="javascripts/controllers/MainCtrl.js"></script>
+	<script src="javascripts/controllers/PostCtrl.js"></script>
+	<script src="javascripts/controllers/AuthCtrl.js"></script>
+	<script src="javascripts/controllers/UnitCtrl.js"></script>
+	<script src="javascripts/controllers/NavCtrl.js"></script>
+	<script src="javascripts/controllers/NewsCtrl.js"></script>
+	<script src="javascripts/controllers/LocationCtrl.js"></script>
+	<script src="javascripts/controllers/RoyaCtrl.js"></script>
+	<script src="javascripts/controllers/GalloCtrl.js"></script>
+	<script src="javascripts/controllers/DosageCtrl.js"></script>
+	<script src="javascripts/controllers/VulneCtrl.js"></script>
+	<script src="javascripts/controllers/SupportCtrl.js"></script>
+	<script src="javascripts/controllers/WeatherCtrl.js"></script>
+	<script src="javascripts/controllers/ProfileCtrl.js"></script>
+	<script src="javascripts/controllers/CampoCtrl.js"></script>
 	
 	<script src="javascripts/easy-weather-keys.js"></script>
 	<script src="javascripts/easy-weather.js"></script>
@@ -55,7 +70,9 @@
 		<span>Cargando...</span>
 	</div>
 
-	<nav class="navbar navbar-default pull-left" ng-controller="NavCtrl" snap-drawer>
+		<!-- views/partials/navigation.ejs -->
+
+<nav class="navbar navbar-default pull-left" ng-controller="NavCtrl" snap-drawer>
 	    <ul class="nav navbar-nav" ng-show="isLoggedIn()">
 	      <li><a href="#" snap-toggle><i class="fa fa-search"></i> Buscador</a></li>
 	      <li><a href="#/home" snap-toggle><i class="fa fa-cloud"></i> Clima</a></li>
@@ -70,16 +87,17 @@
 	      <li><a href="#/news" snap-toggle><i class="fa fa-bell"></i> Noticias</a></li>
 	      <li><a href="#/support" snap-toggle><i class="fa fa-comment"></i> Comunicación</a></li>
 	      <li><a href="#/profile" snap-toggle><i class="fa fa-user"></i> Perfil</a></li>
-	      <li><a href="#" ng-click="logOut()"><i class="fa fa-power-off"></i> Log out</a></li>
+	      <li><a href="#/login" ng-click="logOut()"><i class="fa fa-power-off"></i> Salir</a></li>
 	    </ul>
 	  </nav>
+	
+	
 	  <div class="pushbox" snap-content snap-opt-disable="'right'">
 	  	<div class="nav-switch" ng-controller="NavCtrl"><button ng-show="isLoggedIn()" class="switch glyphicon glyphicon-menu-hamburger" type="button" snap-toggle></button></div>
 				<ui-view></ui-view>
 	  </div>
 		  
-			   					   		
-	<script type="text/ng-template" id="/home.html">
+		<script type="text/ng-template" id="/home.html">
 		<div class="home-wrap">
 		 <div class="container">
 			   	<div class="row">
@@ -112,17 +130,19 @@
 		<script>
 		$(document).ready(function() {
 			
-			var country = geoplugin_countryName();
+			/*var country = geoplugin_countryName();
 			var zone = geoplugin_region();
 			decoded = $("<textarea/>").html(zone).text();
 			if(decoded == "San José") {
 				decoded = "sanjose"
-			}
+			}*/
 			
 			$('.weather-wrapper').EasyWeather({
 				language: 'sp',
-				providerId: 'owm',
+				providerId: 'wug',
 				providerSequence: false,
+				geoProviderId:'fgip',
+				geoProviderSequence: false,
 				refreshLink: false,
 				todayLabel: 'Hoy',
 				detailLabels: {
@@ -132,7 +152,8 @@
 					pressure: 'Presion: ',
 					visibility: 'Visibilidad: '
 				},
-				theme: 'ew-transparent'
+				theme: 'ew-transparent',
+				
 			});
 			
 			
@@ -141,7 +162,8 @@
 		
 		
 	</script>
-	<script type="text/ng-template" id="/posts.html">
+		
+		<script type="text/ng-template" id="/posts.html">
 	  <div class="container blog-post">
 		  <div class="row">
 			  <div class="col-md-12">
@@ -161,8 +183,9 @@
 			  </div>
 		  </div>
 	   </div>
-	</script>
-	<script type="text/ng-template" id="/register.html">
+	</script>   
+		
+		<script type="text/ng-template" id="/register.html">
 	  <div class="register-wrap">
 		<div class="container">
 			<div class="row">
@@ -210,8 +233,9 @@
 			</div>
 		</div>
 	</div>
-	</script>
-	<script type="text/ng-template" id="/register-profile.html">
+	</script>  	
+		
+		<script type="text/ng-template" id="/register-profile.html">
 	  <div class="register-profile-wrap profile">
 		<div class="container">
 			<div class="row">
@@ -1181,7 +1205,8 @@
 		</div>
 	</div>
 	</script>
-	<script type="text/ng-template" id="/login.html">
+		
+		<script type="text/ng-template" id="/login.html">
 		<div class="login-wrap">
 		<div class="container">
 			<div class="row">
@@ -1222,7 +1247,8 @@
 		</div>
 	</div>
 	  </script>
-	<script type="text/ng-template" id="/forgorpasswordscreen.html">
+		
+		<script type="text/ng-template" id="/forgorpasswordscreen.html">
 		<div class="login-wrap">
 		<div class="container">
 			<div class="row">
@@ -1260,8 +1286,9 @@
 			</div>
 		</div>
 	</div>
-	  </script>	
-	<script type="text/ng-template" id="/resetpassword.html">
+	  </script>					   		
+	
+		<script type="text/ng-template" id="/resetpassword.html">
 		<div class="login-wrap">
 		<div class="container">
 			<div class="row">
@@ -1304,8 +1331,9 @@
 			</div>
 		</div>
 	</div>
-	  </script>	
-	<script type="text/ng-template" id="/otpscreen.html">
+	  </script>
+		
+		<script type="text/ng-template" id="/otpscreen.html">
 		<div class="login-wrap">
 		<div class="container">
 			<div class="row">
@@ -1344,7 +1372,8 @@
 		</div>
 	</div>
 	  </script>
-	<script type="text/ng-template" id="/location.html">
+		
+		<script type="text/ng-template" id="/location.html">
 	  		<div class="location-wrap">
 				<div class="container">
 					<div class="row">
@@ -1368,8 +1397,9 @@
 					</div>
 				</div>
 			</div>
-	  </script>  
-	<script type="text/ng-template" id="/roya.html">
+	  </script>
+		
+		<script type="text/ng-template" id="/roya.html">
 	  		<div class="roya-wrap">
 	  			<h2 class="section-header">
 	  				CÁLCULO DE ROYA <small ng-show="test.advMode">(avanzado)</small>
@@ -1386,23 +1416,81 @@
 							  <input type="radio" id="optionsRadios2" ng-value="true" ng-model="test.advMode"><label for="optionsRadios2">Avanzado <small>(Incluye cálculo de severidad)</small></label>
 							</div>
 							
-							<h4 class="clearfix">Seleccione la Unidad para la prueba</h4>
+							<h4 class="clearfix">Seleccione el lote para la prueba</h4>
 							
 							<div class="unidades-wrap">
-					   			<div class="unidad" ng-repeat="unit in units" id="{{unit._id}}" ng-click="startTest(unit)">
-					   				
-					   				<span ng-show="unit.lote.nombre">{{unit.lote.nombre}}</span>
-					   				
-						   			<span ng-hide="unit.lote.nombre">{{unit.nombre}}</span>
-						   			
-						   			<i class="glyphicon glyphicon-chevron-right"></i>
-						   			
+					   			<div class="unidad-wrap" ng-repeat="unit in units" id="{{unit._id}}">
+					   				<h3 ng-hide="unit.lote.nombre">{{unit.nombre}}</h3>
+					   					<a class="unidad" ng-show="unit.lote == 0" href="#/profile">
+						   					<span>Agregar Lotes</span>
+							   				<i class="glyphicon glyphicon-chevron-right"></i>
+					   					</a>
+					   					<div class="unidad" ng-repeat="lote in unit.lote" id="{{unit._id + $index}}" ng-click="startTest(unit.user, unit.lote[$index])">
+								   			<span>{{lote.nombre}} </span>
+							   				<i class="glyphicon glyphicon-chevron-right"></i>
+							   			</div>	
 						   		</div>
 						    </div>
 						    <a href="#/profile">Agregar Unidades</a>
 							
 							<!-- <button class="btn btn-primary" ng-click="startTest($event)">Basico</button>
 							<button class="btn btn-primary adv" ng-click="startTest($event)">Avanzado</button> -->
+							
+							
+							<!-- Button trigger history modal -->
+								<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#history" ng-click="historialLaunch()">
+								  Calculos anteriores
+								</button>
+								
+								<!-- History Modal -->
+								<div class="modal fade" id="history" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+								  <div class="modal-dialog" role="document">
+								    <div class="modal-content">
+								      <div class="modal-header">
+								        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+								        <h4 class="modal-title" id="myModalLabel">Calculos anteriores</h4>
+								      </div>
+								      <div class="modal-body">
+									      <h6 ng-show="royaHistory.length == 0">¡No hay cálculos todavía!</h6>
+								        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
+									  <div class="panel panel-default" ng-repeat="roya in royaHistory">
+										    <div class="panel-heading" role="tab" id="{{ 'heading-' + $index }}">
+										      <h5 class="panel-title">
+										        <a role="button" data-toggle="collapse" data-parent="#accordion" data-target="{{ '#collapse-' + $index }}" aria-expanded="false" aria-controls="{{ 'collapse-' + $index }}">
+										         {{roya.unidad.nombre}} <small>{{ roya.createdAt | date : "MMM d, y h:mm:ss a" }}</small>
+										        </a>
+										      </h5>
+										    </div>
+										    <div id="{{ 'collapse-' + $index }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="{{ 'collapse-' + $index }}">
+										      <div class="panel-body">
+											      	<ul class="list-group">
+												      <li class="list-group-item"><strong>Incidencia</strong> <span class="badge">{{ (roya.incidencia).toFixed(2) }}%</span></li>
+													  <li class="list-group-item" >bandolas <span ng-show="roya.bandolas" class="badge">2</span><span ng-hide="roya.bandolas" class="badge">1</span></li>
+													  <li class="list-group-item" ng-show="roya.advMode">Severidad Promedio <span class="badge">{{(roya.severidadPromedio).toFixed()}}%</span></li>
+													  <li class="list-group-item" ng-show="roya.advMode">Incidencia promedio por planta <span class="badge">{{roya.inideanciaPromedioPlanta}}</span></li>
+													  
+													</ul>
+									
+								<p><strong>Recomendación</strong><br>
+									<span ng-show="roya.incidencia < 11">{{methodsMonth.grade1}}</span>
+									<span ng-show="roya.incidencia > 10 && test.incidencia < 21 ">{{methodsMonth.grade2}}</span>
+									<span ng-show="roya.incidencia > 20 && test.incidencia < 51 ">{{methodsMonth.grade3}}</span>
+									<span ng-show="roya.incidencia > 50 ">{{methodsMonth.grade3}}</span>
+								</p>
+										        	 
+										      </div>
+										    </div>
+									  </div>
+									</div>
+								      </div>
+								      <div class="modal-footer">
+								        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+								        
+								      </div>
+								    </div>
+								  </div>
+								</div>
+							
 							
 						</div>
 					</div>
@@ -1428,10 +1516,10 @@
 
 								<div class="testControls">
 								<div class="col-md-12 fullbutton nopadd">
-									<button class="btn btn-primary" ng-click="ClearTest()">Cancelar</button>
-								</div>
-
 									<button class="btn btn-primary" ng-click="addPlant()" ng-disable="IsTotalPlantaAdded" ng-hide="test.plantas.length > 29 && test.bandolas || test.plantas.length > 49 && !test.bandolas">Agregar Planta</button>
+								</div>
+									<button class="btn btn-primary" ng-click="ClearTest()">Cancelar</button>
+									
 									<button class="btn btn-primary" ng-click="calculateTest()" ng-disabled="test.plantas.length < 30 && test.bandolas || test.plantas.length < 50 && !test.bandolas">Calcular</button>
 								</div>
 							</div>
@@ -1578,7 +1666,8 @@
 			</div>
 			
 	  </script>
-	<script type="text/ng-template" id="/gallo.html">
+	
+		<script type="text/ng-template" id="/gallo.html">
 	  		<div class="roya-wrap">
 	  			<h2 class="section-header">
 	  				CÁLCULO DE OJO DE GALLO 
@@ -1752,7 +1841,8 @@
 			</div>
 			
 	  </script>
-	<script type="text/ng-template" id="/dosage.html">
+		
+		<script type="text/ng-template" id="/dosage.html">
 			<div class="roya-wrap">
 						<h2 class="section-header">
 		  				CÁLCULO DE DOSIFICACION ADECUADA
@@ -1818,7 +1908,8 @@
 					</div>
 				</div>
 		  </script>
-	<script type="text/ng-template" id="/vulnerability.html">
+		
+		<script type="text/ng-template" id="/vulnerability.html">
 		
 			<div class="vul-wrap">
 						<h2 class="section-header">
@@ -3987,7 +4078,8 @@
     	}
 	</script>
 	</script>
-	<script type="text/ng-template" id="/campo.html">
+		
+		<script type="text/ng-template" id="/campo.html">
 			<div class="roya-wrap">
 					<h2 class="section-header">
 		  				Hoja de Enfermedad
@@ -4237,7 +4329,8 @@
 				</div>
 				
 		  </script>
-	<script type="text/ng-template" id="/weather.html">
+		
+		<script type="text/ng-template" id="/weather.html">
 			<div class="home-wrap weather">
 			 <div class="container">
 				   	<div class="row">
@@ -4270,8 +4363,10 @@
 				
 				$('.weather-module').EasyWeather({
 					language: 'sp',
-					providerId: 'owm',
+					providerId: 'wug',
 					providerSequence: false,
+					geoProviderId:'fgip',
+					geoProviderSequence: false,
 					showDetails: true,
 					refreshLink: false,
 					todayLabel: 'Hoy',
@@ -4290,7 +4385,8 @@
 			
 		</script>
 		</script>
-	<script type="text/ng-template" id="/forecast.html">
+		
+		<script type="text/ng-template" id="/forecast.html">
 			<div class="home-wrap weather">
 			 <div class="container">
 				   	<div class="row">
@@ -4343,7 +4439,8 @@
 				
 			</script>
 		</script>
-	<script type="text/ng-template" id="/moon.html">
+		
+		<script type="text/ng-template" id="/moon.html">
 			
 			<div class="home-wrap weather">
 			 <div class="container">
@@ -4409,7 +4506,8 @@
 				});
 			</script>
 		</script>
-	<script type="text/ng-template" id="/support.html">
+		
+		<script type="text/ng-template" id="/support.html">
 
 	<!-- Modal -->
 			<div class="modal fade" id="myModalUserImage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -4489,10 +4587,11 @@
 							  <button type="submit" class="btn btn-default">Enviar</button>
 						</form>
 	</script>
-	<script type="text/ng-template" id="/profile.html">
+		
+		<script type="text/ng-template" id="/profile.html">
 		<div class="home-wrap profile-wrap">
 		 <div class="container">
-			   	<div class="row">
+			  	<div class="row">
 			   		<div class="col-md-6 col-md-offset-3">
 			   		  <div class="page-header">
 				        <h2>Editar Perfil <span> {{ currentUser() }}</span></h2>
@@ -4505,25 +4604,22 @@
 			   	<div class="row">
 				   	<div class="col-md-6 col-md-offset-3">
 					   	<h4>Información de contacto</h4>
-					   	<form class="form" role="form" data-toggle="validator" ng-submit="update()">
+					   	<form class="form" id="contactInfo" name="contactInfo" role="form" data-toggle="validator" ng-submit="updated()">
 						   	<div class="form-group">
 							   	<label>Email asociado con su cuenta</label>
-							   	<input class="form-control" type="email" ng-model="userO.email"/>
+							   	<input class="form-control" type="email" ng-model="userO7.email" required/>
 							</div>
 							<div class="form-group">
 							   	<label>Telefono</label>
-							   	<input class="form-control" type="text" ng-model="userO.phone"/>
+							   	<input class="form-control" type="text" ng-model="userO7.phone" required/>
 							</div>
-							<!-- <div class="form-group">
-							   	<label>Recomendación Técnica</label>
-							   	<input class="form-control" type="text" ng-model="userO.recomendaciontecnica"/>
-							</div> -->
+						
 							<div class="form-group">
-							    <button type="submit" style="width:100%;" class="btn btn-primary">Guardar Cambios</button>
+							    <button type="submit" style="width:100%;" class="btn btn-primary" form="contactInfo">Guardar Cambios</button>
 							</div>			
 					   	</form>
 					   	<h4>Cambiar Contraseña</h4>
-					   	<form class="form" role="form" data-toggle="validator" ng-submit="update()">
+					   	<form class="form" role="form" id="paswordForm" name="paswordForm" data-toggle="validator" ng-submit="update()">
 					   		<div class="form-group">
 							<div class="row">
 							    <div class="form-group col-sm-6">
@@ -4531,17 +4627,17 @@
 							      <div class="help-block">Minimo 6 caracteres</div>
 							    </div>
 							    <div class="form-group col-sm-6">
-							      <input type="password" class="form-control" id="inputPasswordConfirm" data-match="#inputPassword" data-match-error="Whoops, these don't match" placeholder="Confirmar Contraseña" ng-model="userO.password" required>
+							      <input type="password" class="form-control" id="inputPasswordConfirm" data-match="#inputPassword" data-match-error="Whoops, these don't match" placeholder="Confirmar Contraseña" ng-model="userO7.password" required>
 							      <div class="help-block with-errors"></div>
 							    </div>
 							    <div class="form-group col-sm-12">
-								    <button type="submit" style="width:100%;" class="btn btn-primary">Actualizar constraseña</button>
+								    <button type="submit" style="width:100%;" class="btn btn-primary" form="paswordForm">Actualizar contraseña</button>
 								</div>
 							</div>
 						</div>	
 					   </form>	
 				   	</div>
-				</div>
+				</div> 
 			   	
 			   	<div class="row">
 				   	<div class="col-md-6 col-md-offset-3">
@@ -4554,15 +4650,15 @@
 						   			<button class="btn btn-danger" ng-click="deleteUnit($event, unit._id, $index)">X</button>
 						   			<button class="btn btn-default" style="margin-left: 12px;" ng-click="updateUnit($event, unit._id, $index)" data-toggle="modal" data-target="#myModal">editar</button>
 						   			
-						   			<button class="btn btn-default" ng-click="updateUnit($event, unit._id, $index)" data-toggle="modal" data-target="#myModal3">Lote</button>
+						   			<button class="btn btn-default" ng-click="updateUnit($event, unit._id, $index)" data-toggle="modal" data-target="#myModal3">Lotes</button>
 						   			
 						   		</div>
 						    </div>
 						    <button class="btn btn-primary add-unit" data-toggle="modal" data-target="#myModal2">Agregar Nueva Unidad</button>
 						    
 							
-							<!-- Modals -->
-							
+							<!-- Modals	 -->
+						
 							
 							
 							<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -4672,151 +4768,17 @@
 													<div class="form-group">
 														<div class="row">
 														<label class="col-xs-12">Variedad</label>
-															<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Catimor5175"> Catimor 5175
+															<div class="col-xs-6" ng-repeat="variedad in variedades">
+													          <label ng-hide="variedad.name == 'cual?'">
+													            <input type="checkbox" ng-model="editUnit.variedad[variedad.name]"> {{variedad.name}} 
 													          </label>
+													          
+													           <input type="text"
+														      class="form-control"
+														      placeholder="¿cual?"
+														      ng-model="editUnit.variedad['cual?']" ng-show="editUnit.variedad['otro'] && variedad.name == 'cual?'"></input>
 													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Sarchimor"> Sarchimor
-													          </label>
-													        </div>									
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Anacafe14"> Anacafe14
-													          </label>
-													        </div>
-															 <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Anacafe90"> Anacafe 90
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.CostaRica95"> Costa Rica 95
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Lempira"> Lempira
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Obata"> Obata 
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Catucai"> Catucai
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.HibridoH1"> Hibrido H1
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Marsellesa"> Marsellesa
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Tupi"> Tupi
-													          </label>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Parainema"> Parainema
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.CatuaiAmarillo"> Catuai Amarillo
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.CatuaiRojo"> CatuaiRojo 
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Caturra"> Caturra
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Pacamara"> Pacamara
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Pachecolis"> Pache Colis
-													          </label>
-													        </div>
-																		<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Geisha"> Geisha
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Bourbon"> Bourbon
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Pachecomun"> Pache comun
-													          </label>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Pacas"> Pacas
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Robusta"> Robusta
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.MundoNovo"> Mundo Novo 
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.VillaSarchi"> Villa Sarchi
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Maragogype"> Maragogype
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Typica"> Typica
-													          </label>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Maracaturra"> Maracaturra
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="editUnit.variedad.Otra"> Otra
-													          </label>
-													        </div>
-													         <div class="col-xs-6" ng-show="editUnit.variedad.Otra">
-													          <label>
-													            <input type="text" ng-model="editUnit.variedad.Cual"  placeholder="cual?"> 
-													          </label>
-													        </div>
+													        
 														</div>
 													</div>
 												</div>
@@ -5550,7 +5512,7 @@
 							        <h4 class="modal-title" id="myModalLabel">Nueva Unidad</h4>
 							      </div>
 							      <div class="modal-body">
-										  <form name="newunitForm" ng-submit="saveUnit()" id="newunitForm" data-toggle="validator">
+										  <form name="newunitForm" novalidate class="form" role="form" ng-submit="saveUnit()" id="newunitForm" data-toggle="validator">
 						
 										    <div class="row">
 												<div class="col-xs-12">
@@ -5559,7 +5521,10 @@
 														      class="form-control"
 														      placeholder="Nombre"
 														      ng-model="newUnit.nombre"	
-														      required></input>
+														      data-error="Campo requerido"
+														      required>
+														      <div class="help-block with-errors"></div>
+														      
 													</div>
 												</div>
 												<div class="col-xs-12">
@@ -5578,8 +5543,10 @@
 												</div>
 												<div class="col-xs-12">
 													<div class="form-group munis">
-														<select ng-model="newUnit.departamentos" id="departamentos" class="form-control" required>
-													</select>
+														<select ng-model="newUnit.departamentos" id="departamentos" class="form-control" data-error="Campo requerido" required>
+														</select>
+														
+														 <div class="help-block with-errors"></div>
 													</div>
 												</div>
 												<div class="col-xs-6">
@@ -5587,7 +5554,8 @@
 														<input type="text"
 														      class="form-control"
 														      placeholder="Geo Referencia"
-														      ng-model="newUnit.ubicacion" ng-click="mapInit()" id="latlongid" required></input>
+														      ng-model="newUnit.ubicacion" ng-click="mapInit()" id="latlongid" data-error="Campo requerido" required>
+														      <div class="help-block with-errors"></div></input>
 													</div>
 												</div>
 												<div class="col-xs-6">
@@ -5629,151 +5597,19 @@
 													<div class="form-group">
 														<div class="row">
 														<label class="col-xs-12">Variedad</label>
-															<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Catimor5175"> Catimor 5175
+															<div class="col-xs-6" ng-repeat="variedad in variedades">
+													          <label ng-hide="variedad.name == 'cual?'">
+													            <input type="checkbox" ng-model="newUnit.variedad[variedad.name]" > {{variedad.name}} 
 													          </label>
+													          
+													          <input type="text"
+														      class="form-control"
+														      placeholder="¿cual?"
+														      ng-model="newUnit.variedad['cual?']" ng-show="newUnit.variedad['otro'] && variedad.name == 'cual?'"></input>
+													          
+													          
 													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Sarchimor"> Sarchimor
-													          </label>
-													        </div>									
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Anacafe14"> Anacafe14
-													          </label>
-													        </div>
-															 <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Anacafe90"> Anacafe 90
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.CostaRica95"> Costa Rica 95
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Lempira"> Lempira
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Obata"> Obata 
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Catucai"> Catucai
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.HibridoH1"> Hibrido H1
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Marsellesa"> Marsellesa
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Tupi"> Tupi
-													          </label>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Parainema"> Parainema
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.CatuaiAmarillo"> Catuai Amarillo
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.CatuaiRojo"> CatuaiRojo 
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Caturra"> Caturra
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Pacamara"> Pacamara
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Pachecolis"> Pache Colis
-													          </label>
-													        </div>
-																		<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Geisha"> Geisha
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Bourbon"> Bourbon
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Pachecomun"> Pache comun
-													          </label>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Pacas"> Pacas
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Robusta"> Robusta
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.MundoNovo"> Mundo Novo 
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.VillaSarchi"> Villa Sarchi
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Maragogype"> Maragogype
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Typica"> Typica
-													          </label>
-													        </div>
-																	<div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Maracaturra"> Maracaturra
-													          </label>
-													        </div>
-													        <div class="col-xs-6">
-													          <label>
-													            <input type="checkbox" ng-model="newUnit.variedad.Otra"> Otra
-													          </label>
-													        </div>
-													        <div class="col-xs-6" ng-show="newUnit.variedad.Otra">
-													          <label>
-													            <input type="text" ng-model="newUnit.variedad.Cual"  placeholder="cual?"> 
-													          </label>
-													        </div>
+													        
 														</div>
 													</div>
 												</div>
@@ -6502,12 +6338,13 @@
 										</div>
 										
 																								<!-- new questions ends --> 
-										    
+										  <input type="submit" class="btn btn-primary" submit="newunitForm" form="newunitForm" value="Guardar nueva"/>
 										  </form>
 							      </div>
 							      <div class="modal-footer">
+								      
 							        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-							        <button type="button" class="btn btn-primary" form="newunitForm" ng-disabled="newunitForm.$invalid" ng-click="saveUnit()" >Guardar nueva</button>
+							        
 							        <div ng-show="sucMsg" class="bg-success row">
 									    <span>{{ sucMsg }}</span>
 									  </div>
@@ -6521,104 +6358,121 @@
 							    <div class="modal-content">
 							      <div class="modal-header">
 							        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-							        <h4 class="modal-title" id="myModalLabel">Editar Lote: {{ editUnit.nombre }}</h4>
+							        <h4 class="modal-title" id="myModalLabel">Editar Lotes: {{ editUnit.nombre }}</h4>
 							      </div>
 							      <div class="modal-body">
-										  <form name="updateunitFormlote" ng-submit="updateUnitForm($event,editUnit._id)" id="updateunitFormlote" >
-						
-										    <div class="row">
-											    <div class="col-xs-12">
-													<div class="form-group">
-														<input type="text"
-														      class="form-control"
-														      placeholder="Nombre del lote"
-														      ng-model="editUnit.lote.nombre"	
-														      ></input>
-													</div>
-												</div>
-												<div class="col-xs-12">
-													<div class="form-group">
-														<input type="text"
-														      class="form-control"
-														      placeholder="Georeferenciación"
-														      ng-model="editUnit.lote.georeferenciacion"	
-														      ></input>
-													</div>
-												</div>
-												<div class="col-xs-12">
-													<div class="form-group">
-														<input type="text"
-														      class="form-control"
-														      placeholder="Altitud"
-														      ng-model="editUnit.lote.altitud"	
-														      ></input>
-													</div>
-												</div>
-												<div class="col-xs-12">
-													<div class="form-group">
-														<input type="text"
-														      class="form-control"
-														      placeholder="Tamaño del lote (manzanas)"
-														      ng-model="editUnit.lote.tamano"	
-														      ></input>
-													</div>
-												</div>
-												<div class="col-xs-12">
-													<div class="form-group">
-														<input type="text"
-														      class="form-control"
-														      placeholder="Edad del lote"
-														      ng-model="editUnit.lote.edad"	
-														      ></input>
-													</div>
-												</div>
-												<div class="col-xs-12">
-													<div class="form-group">
-														<input type="text"
-														      class="form-control"
-														      placeholder="Variedad"
-														      ng-model="editUnit.lote.variedad"	
-														      ></input>
-													</div>
-												</div>
-												<div class="col-xs-12">
-													<div class="form-group">
-														<p>¿Tiene sombra?</p>
-														<div class="radio">
-														  <label>
-														    <input type="radio" id="optionsRadios1" ng-value="true" ng-model="editUnit.lote.sombra">
-														    Si
-														  </label>
+								    <form name="updateunitFormlote" ng-submit="updateUnitForm($event,editUnit._id)" id="updateunitFormlote" >  
+								      
+								      <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
+									  <div class="panel panel-default" ng-repeat="lote in editUnit.lote">
+										    <div class="panel-heading" role="tab" id="{{ 'heading-' + $index }}">
+										      <h4 class="panel-title">
+										        <a role="button" data-toggle="collapse" data-parent="#accordion" data-target="{{ '#collapse-' + $index }}" aria-expanded="false" aria-controls="{{ 'collapse-' + $index }}">
+										          {{ editUnit.lote[$index].nombre }}
+										        </a>
+										      </h4>
+										    </div>
+										    <div id="{{ 'collapse-' + $index }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="{{ 'collapse-' + $index }}">
+										      <div class="panel-body">
+										        	 <div class="row">
+													    <div class="col-xs-12">
+															<div class="form-group">
+																<input type="text"
+																      class="form-control"
+																      placeholder="Nombre del lote"
+																      ng-model="editUnit.lote[$index].nombre"	
+																      ></input>
+															</div>
 														</div>
-														<div class="radio">
-														  <label>
-														    <input type="radio" id="optionsRadios2" ng-value="false" ng-model="editUnit.lote.sombra">
-														    No
-														  </label>
+														<div class="col-xs-12">
+															<div class="form-group">
+																<input type="text"
+																      class="form-control"
+																      placeholder="Georeferenciación"
+																      ng-model="editUnit.lote[$index].georeferenciacion"	
+																      ></input>
+															</div>
 														</div>
+														<div class="col-xs-12">
+															<div class="form-group">
+																<input type="text"
+																      class="form-control"
+																      placeholder="Altitud"
+																      ng-model="editUnit.lote[$index].altitud"	
+																      ></input>
+															</div>
+														</div>
+														<div class="col-xs-12">
+															<div class="form-group">
+																<input type="text"
+																      class="form-control"
+																      placeholder="Tamaño del lote (manzanas)"
+																      ng-model="editUnit.lote[$index].tamano"	
+																      ></input>
+															</div>
+														</div>
+														<div class="col-xs-12">
+															<div class="form-group">
+																<input type="text"
+																      class="form-control"
+																      placeholder="Edad del lote"
+																      ng-model="editUnit.lote[$index].edad"	
+																      ></input>
+															</div>
+														</div>
+														<div class="col-xs-12">
+															<div class="form-group">
+																<input type="text"
+																      class="form-control"
+																      placeholder="Variedad"
+																      ng-model="editUnit.lote[$index].variedad"	
+																      ></input>
+															</div>
+														</div>
+														<div class="col-xs-12">
+															<div class="form-group">
+																<p>¿Tiene sombra?</p>
+																<div class="radio">
+																  <label>
+																    <input type="radio" id="optionsRadios1" ng-value="true" ng-model="editUnit.lote[$index].sombra">
+																    Si
+																  </label>
+																</div>
+																<div class="radio">
+																  <label>
+																    <input type="radio" id="optionsRadios2" ng-value="false" ng-model="editUnit.lote[$index].sombra">
+																    No
+																  </label>
+																</div>
+															</div>
+														</div>
+														<div class="col-xs-12">
+															<div class="form-group">
+																<p>¿Tiene cobertura de suelo?</p>
+																<div class="radio">
+																  <label>
+																    <input type="radio" id="optionsRadios1" ng-value="true" ng-model="editUnit.lote[$index].cobertura">
+																    Si
+																  </label>
+																</div>
+																<div class="radio">
+																  <label>
+																    <input type="radio" id="optionsRadios2" ng-value="false" ng-model="editUnit.lote[$index].cobertura">
+																    No
+																  </label>
+																</div>
+															</div>
+														</div>
+														
 													</div>
-												</div>
-												<div class="col-xs-12">
-													<div class="form-group">
-														<p>¿Tiene cobertura de suelo?</p>
-														<div class="radio">
-														  <label>
-														    <input type="radio" id="optionsRadios1" ng-value="true" ng-model="editUnit.lote.cobertura">
-														    Si
-														  </label>
-														</div>
-														<div class="radio">
-														  <label>
-														    <input type="radio" id="optionsRadios2" ng-value="false" ng-model="editUnit.lote.cobertura">
-														    No
-														  </label>
-														</div>
-													</div>
-												</div>
-												
-											</div>
-										    
-										  </form>
+										      </div>
+										    </div>
+									  </div>
+									</div>
+							      
+								      </form>
+										  
+										  <button type="button" class="btn btn-default" ng-click="prependItem()">Agregar nuevo lote</button>
 							      </div>
 							      <div class="modal-footer">
 							        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
@@ -6635,7 +6489,8 @@
 		   </div>
 		</div>
 	</script>
-	<script type="text/ng-template" id="/news.html">
+		
+		<script type="text/ng-template" id="/news.html">
 		<div class="home-wrap blog">
 		 <div class="container">
 			   	<div class="row">
@@ -6669,16 +6524,12 @@
 		   </div>
 		</div>
 	</script>
-	
-	
-
-
 
 	  <!-- Latest compiled and minified JavaScript -->
 
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<script src="javascripts/bootstrap.min.js" ></script>
 <script src = "bower_components/angular-scroll-glue/src/scrollglue.js"></script>
-<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="javascripts/jquery-ui.js"></script>
 
 
 

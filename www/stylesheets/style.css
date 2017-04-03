@@ -559,7 +559,11 @@ a {
   font-weight: 700;
 }
 
-.roya-wrap .intro h4 {
+.roya-wrap .intro {
+  margin-bottom: 24px;
+}
+
+.roya-wrap .intro h4.clearfix {
   clear: both;
   padding: 24px 0 8px;
   font-size: 16px;
@@ -578,6 +582,10 @@ a {
   font-size: 18px;
 }
 
+.roya-wrap .modal-body p {
+  font-size: 14px;
+}
+
 .roya-wrap .radio {
   float: left;
   width: 49%;
@@ -588,7 +596,7 @@ a {
   padding: 12px 0;
   min-height: 55px;
   font-size: 12px;
-  background-color: #21AAF7;
+  background-color: #a7cade;
   color: #fff;
   width: 100%;
 }
@@ -976,6 +984,17 @@ input:checked + label + #otherArea {
     background-color: rgba(255, 255, 255, 0.13);
     clear: both;
 }
+.unidad-wrap {
+
+}
+
+.unidad-wrap h3 {
+    background-color: #21aaf7;
+    margin:0;
+    padding: 6px 0;
+    color: #fff;
+    font-size: 14px;
+}
 
 .unidad {
   background-color: #E9E9E9;
@@ -983,6 +1002,8 @@ input:checked + label + #otherArea {
   color: #333;
   text-align: left;
 }
+
+
 
 .unidad:nth-child(even) {
     background: #D0D0D0;
@@ -995,6 +1016,12 @@ input:checked + label + #otherArea {
   background-color: #FE8515;
   border-color: #FE8515;
   color: #fff;
+}
+
+a.unidad {
+  display:block;
+  background: #E9E9E9 !important;
+  color: #00abff;
 }
 
 .unidad .btn.btn-danger {
@@ -1188,3 +1215,9 @@ input:checked + label + #otherArea {
 background-color: #3498db  !important;
     border-color: #3498db;
   }
+
+.panel-group .panel-title a {
+    color: #666;
+    display: block;
+    width: 100%;
+}
