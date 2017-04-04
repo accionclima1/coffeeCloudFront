@@ -136,6 +136,7 @@ function($rootScope, $scope, $state, auth, localStorageService, socket, unit, us
 		avgplntDmgPct : 0,
 		incidencia : 0
 	  };
+	  
 	methods.get().then(function(methods){
 		 var meth = methods.data[0];
 		 var date = new Date();

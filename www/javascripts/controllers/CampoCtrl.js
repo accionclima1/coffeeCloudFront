@@ -1,4 +1,5 @@
 app.controller('CampoCtrl', [
+'$rootScope',
 '$scope',
 '$state',
 'auth',
@@ -7,8 +8,9 @@ app.controller('CampoCtrl', [
 'unit',
 'user',
 'methods',
-'gallo','campoService',
-function($scope, $state, auth, localStorageService, socket, unit, user, methods, roya, campoService){
+'campoService',
+'PouchDB',
+function($rootScope, $scope, $state, auth, localStorageService, socket, unit, user, methods, campoService, PouchDB){
   $scope.currentUser = auth.currentUser;
   $scope.resultscampo = false;
   var currentId = auth.currentUser();
@@ -17,7 +19,7 @@ function($scope, $state, auth, localStorageService, socket, unit, user, methods,
   	localStorageService.remove('localTestCampo');
   	$state.go($state.current, {}, {reload: true})
   }
-  
+  $scope.user_Ided = auth.userId();
   var plantEditorCampo = function(plant) {
 	  $scope.plantname = plant;
 	  $scope.leafList = $scope.test.plantas[plant - 1];
@@ -25,9 +27,79 @@ function($scope, $state, auth, localStorageService, socket, unit, user, methods,
 	  $('#plantModal').modal('show');
   };
     $scope.affect = 1;
-    user.get(auth.userId()).then(function(user){
-		 $scope.units = user.units;
+    
+    
+    
+    
+     PouchDB.GetUserDataFromPouchDB(auth.userId()).then(function (result) {
+        if (result.status == 'fail') {
+            $scope.error = result.message;
+            
+        }
+        else if (result.status == 'success') {
+            $scope.userO7 = result.data;
+
+        }
     });
+
+    //console.log("Is INTERNET AVAILABLE=" + $rootScope.IsInternetOnline);
+    if ($rootScope.IsInternetOnline) {
+	    
+	    console.log('app online');
+	    
+        user.get($scope.user_Ided).then(function (user) {
+            $scope.userO7 = user;
+
+
+
+            //region to  get user unit from local PouchDB instead of server
+            PouchDB.GetAllUserUnit(auth.userId()).then(function (result) {
+                if (result.status == 'fail') {
+                    $scope.error = result.message;
+                }
+                else if (result.status == 'success') {
+
+                    $scope.units = result.data;
+                    //if($scope.userO7.units.length === result.data.length){
+
+                    //	$scope.units = result.data;
+                    //	console.log('local mode:',result.data);
+
+                    //} else {
+                    //	console.log('server mode:', $scope.userO7.units);
+                    //	$scope.units = $scope.userO7.units;
+                    //	$scope.remoteMode = true;
+                    //}
+
+
+                }
+            });
+            //endregion
+
+        });
+    } else {
+	    
+	    console.log('app offline');
+	    
+        
+        //region to  get user unit from local PouchDB instead of server
+        PouchDB.GetAllUserUnit(auth.userId()).then(function (result) {
+            if (result.status == 'fail') {
+                $scope.error = result.message;
+            }
+            else if (result.status == 'success') {
+
+
+                $scope.units = result.data;
+                console.log('local mode:', result.data);
+
+
+            }
+        });
+        //endregion
+    }
+
+    
     
      $scope.test = testInStore || {
 	  	advMode : false,
@@ -87,6 +159,7 @@ function($scope, $state, auth, localStorageService, socket, unit, user, methods,
   }
 	
   $scope.startTest = function(selectedUnit) {
+	  selectedUnit["user"] = userid
 	  $scope.test.unidad = selectedUnit;
 	  $('.roya-wrap').addClass('initiated');
    }
@@ -176,11 +249,11 @@ function($scope, $state, auth, localStorageService, socket, unit, user, methods,
     $scope.getHelp = function(currentUser) { 
 	    
 	    
-	    roya.create(testInStore).success(function(data){
+	    campoService.create(testInStore).success(function(data){
 		    
 		    
 		    
-		     var msg = 'Calculo De Roya Enviado: ID: ' + data._id + '.' ;
+		     var msg = 'Calculo De Campo Enviado: ID: ' + data._id + '.' ;
 		  	 var data_server={
 	            message:msg,
 	            to_user:'admin',
@@ -196,5 +269,22 @@ function($scope, $state, auth, localStorageService, socket, unit, user, methods,
         
         
     };
+    
+    var historialLaunchFunc = function() {
+	    
+	    if ($rootScope.IsInternetOnline) {
+		    
+			  campoService.getUser($scope.user_Ided).then(function(userhistory){
+				  $scope.campoHistory = userhistory.data;
+				  localStorageService.set('campoHistory',userhistory.data);
+				  console.log($scope.galloHistory);
+			  });
+			  
+		} else {
+			$scope.campoHistory = localStorageService.get('campoHistory');	  
+		}
+    };
+    historialLaunchFunc();
+    $scope.historialLaunch = historialLaunchFunc();
     
 }]);

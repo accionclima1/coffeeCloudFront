@@ -1060,6 +1060,11 @@ app.factory('campoService', ['$http', 'auth', function ($http, auth) {
             return data;
         });
     };
+    o.getUser = function (userID) {
+        return $http.get('https://coffeecloud.centroclima.org/admin/campo/' + userID).success(function (data) {
+            return data;
+        });
+    };
     o.create = function (method) {
         return $http.post('https://coffeecloud.centroclima.org/admin/campo', method, {
             headers: { Authorization: 'Bearer ' + auth.getToken() }
@@ -1115,6 +1120,11 @@ app.factory('gallo', ['$http', 'auth', function ($http, auth) {
     };
     o.getAll = function () {
         return $http.get('https://coffeecloud.centroclima.org/gallo').success(function (data) {
+            return data;
+        });
+    };
+    o.getUser = function (userID) {
+        return $http.get('https://coffeecloud.centroclima.org/gallo/' + userID).success(function (data) {
             return data;
         });
     };
