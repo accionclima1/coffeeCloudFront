@@ -68,6 +68,15 @@ a {
   margin: 0 auto;
 }
 
+.textloader {
+  color: #9c9c9c;
+}
+
+.profile-wrap .textloader {
+  color: #bce9ff;
+  margin: 48px 0 0;
+}
+
 /* nav menu */
 
 .nav-switch {
@@ -95,17 +104,29 @@ a {
   padding-top: 60px;
 }
 
+.navbar-default.pull-left  .navbar-nav:before {
+  content:"Coffee Cloud";
+  font-family: 'Roboto', sans-serif;
+  position:absolute;
+  top: 16px;
+  left: 24px;
+  text-transform: uppercase;
+  font-size: 21px;
+  color: #d0d0d0;
+}
+
 .navbar-default.pull-left  .navbar-nav li {
   width:100%;
 }
 
-.navbar-default.pull-left .navbar-nav li:first-child {
-  background-color:#fe8515;
+.navbar-default.pull-left .navbar-nav li.active {
+  
   width: 100%;
 }
 
-.navbar-default.pull-left .navbar-nav li:first-child a {
+.navbar-default.pull-left .navbar-nav li.active a {
   color:#fff;
+  background-color:#fe8515;
 }
 
 .navbar-default.pull-left .navbar-nav li a {
@@ -1220,4 +1241,3 @@ background-color: #3498db  !important;
     color: #666;
     display: block;
     width: 100%;
-}

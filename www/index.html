@@ -77,19 +77,19 @@
 
 <nav class="navbar navbar-default pull-left" ng-controller="NavCtrl" snap-drawer>
 	    <ul class="nav navbar-nav" ng-show="isLoggedIn()">
-	      <li><a href="#" snap-toggle><i class="fa fa-search"></i> Buscador</a></li>
-	      <li><a href="#/home" snap-toggle><i class="fa fa-cloud"></i> Clima</a></li>
-	      <li><a href="#/roya" snap-toggle><i class="fa fa-leaf"></i> Cálculo de Roya</a></li>
-	      <li><a href="#/gallo" snap-toggle><i class="fa fa-leaf"></i> Cálculo de Ojo de Gallo</a></li>
-	      <li><a href="#/dosage" snap-toggle><i class="fa fa-cog"></i> Cálculo de Dosificación</a></li>
-	      <li><a href="#/campo" snap-toggle><i class="fa fa-cog"></i> Hoja de enfermedad </a></li>
-	      <li><a href="#/vulnerability" snap-toggle><i class="fa fa-cog"></i> Vulnerabilidad</a></li>
+	     <!-- <li ng-class="{ active: isActive('/adaptacion') }"><a href="#" snap-toggle><i class="fa fa-search"></i> Buscador</a></li> -->
+	      <li ng-class="{ active: isActive('/home') }"><a href="#/home" snap-toggle><i class="fa fa-cloud"></i> Clima</a></li>
+	      <li ng-class="{ active: isActive('/roya') }"><a href="#/roya" snap-toggle><i class="fa fa-leaf"></i> Cálculo de Roya</a></li>
+	      <li ng-class="{ active: isActive('/gallo') }"><a href="#/gallo" snap-toggle><i class="fa fa-leaf"></i> Cálculo de Ojo de Gallo</a></li>
+	      <li ng-class="{ active: isActive('/dosage') }"><a href="#/dosage" snap-toggle><i class="fa fa-cog"></i> Cálculo de Dosificación</a></li>
+	      <li ng-class="{ active: isActive('/campo') }"><a href="#/campo" snap-toggle><i class="fa fa-cog"></i> Hoja de enfermedad </a></li>
+	      <li ng-class="{ active: isActive('/vulnerability') }"><a href="#/vulnerability" snap-toggle><i class="fa fa-cog"></i> Vulnerabilidad</a></li>
 	      <!--<li><a href="#" snap-toggle><i class="fa fa-cog"></i> Cálculo de fertilizante</a></li>
 	      <li><a href="#" snap-toggle><i class="fa fa-calculator"></i> Cálculo de cosecha</a></li>
 	      <li><a href="#" snap-toggle><i class="fa fa-shopping-cart"></i> Proveedores</a></li>-->
-	      <li><a href="#/news" snap-toggle><i class="fa fa-bell"></i> Noticias</a></li>
-	      <li><a href="#/support" snap-toggle><i class="fa fa-comment"></i> Comunicación</a></li>
-	      <li><a href="#/profile" snap-toggle><i class="fa fa-user"></i> Perfil</a></li>
+	      <li ng-class="{ active: isActive('/news') }"><a href="#/news" snap-toggle><i class="fa fa-bell"></i> Noticias</a></li>
+	      <li ng-class="{ active: isActive('/support') }"><a href="#/support" snap-toggle><i class="fa fa-comment"></i> Comunicación</a></li>
+	      <li ng-class="{ active: isActive('/profile') }"><a href="#/profile" snap-toggle><i class="fa fa-user"></i> Perfil</a></li>
 	      <li><a href="#/home" ng-click="logOut()"><i class="fa fa-power-off"></i> Salir</a></li>
 	    </ul>
 	  </nav>
@@ -1295,7 +1295,11 @@
 							
 							<h4 class="clearfix">Seleccione el lote para la prueba</h4>
 							
+							
 							<div class="unidades-wrap">
+								
+								<h6 ng-hide="units" class="textloader">Cargando Unidades <i class="fa fa-spinner fa-spin"></i> </h6>
+								
 					   			<div class="unidad-wrap" ng-repeat="unit in units" id="{{unit._id}}">
 					   				<h3 ng-hide="unit.lote.nombre">{{unit.nombre}}</h3>
 					   					<a class="unidad" ng-show="unit.lote == 0" href="#/profile">
@@ -1556,6 +1560,7 @@
 							<p>Para llevar a cabo el Cálculo de Gallo es necesario que elija 30 plantas (2 Bandolas) o 60 plantas (1 Bandola) al azar</p>
 							<h4 class="clearfix">Seleccione la Unidad para la prueba</h4>
 							<div class="unidades-wrap">
+								<h6 ng-hide="units" class="textloader">Cargando Unidades <i class="fa fa-spinner fa-spin"></i> </h6>
 					   			<div class="unidad-wrap" ng-repeat="unit in units" id="{{unit._id}}">
 					   				<h3 ng-hide="unit.lote.nombre">{{unit.nombre}}</h3>
 					   					<a class="unidad" ng-show="unit.lote == 0" href="#/profile">
@@ -4032,6 +4037,7 @@
 								<h4 class="clearfix">Seleccione la Unidad para Iniciar</h4>
 								
 								<div class="unidades-wrap">
+								<h6 ng-hide="units" class="textloader">Cargando Unidades <i class="fa fa-spinner fa-spin"></i> </h6>
 					   			<div class="unidad-wrap" ng-repeat="unit in units" id="{{unit._id}}">
 					   				<h3 ng-hide="unit.lote.nombre">{{unit.nombre}}</h3>
 					   					<a class="unidad" ng-show="unit.lote == 0" href="#/profile">
@@ -4636,9 +4642,10 @@
 			   	<div class="row">
 				   	<div class="col-md-6 col-md-offset-3">
 				   			<h4>Unidades Productivas</h4>
-				   			
+				   			<h6 ng-hide="units" class="textloader">Cargando Unidades <i class="fa fa-spinner fa-spin"></i> </h6>
+
 				   			<div class="unidades-wrap">
-					   			<div class="unidad" ng-repeat="unit in units" id="{{unit._id}}">
+				   								   			<div class="unidad" ng-repeat="unit in units" id="{{unit._id}}">
 					
 						   			<span>{{unit.nombre}}</span>
 						   			<button class="btn btn-danger" ng-click="deleteUnit($event, unit._id, $index)">X</button>
