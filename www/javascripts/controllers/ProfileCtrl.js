@@ -520,6 +520,11 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, local
 
 
     }
+    
+    
+    $('#myModal2').on('shown.bs.modal', function (e) {
+            $('#newunitForm').validator();
+    });
 
     $scope.updateUnit = function (e, id) {
 

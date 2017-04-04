@@ -694,5 +694,6 @@ function ($rootScope, $scope, $state, unit, auth, varieties, localStorageService
         }
 
     }
-  
+  $('#newunitForm').validator();
+  $('#newunitForm').validator('update');
 }]);

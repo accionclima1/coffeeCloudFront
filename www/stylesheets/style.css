@@ -295,9 +295,9 @@ a {
 }
 
 .register-profile-wrap .form-control {
-  border-color: #fff;
-  box-shadow: 0 0;
-  text-align: center;
+  /* border-color: #fff; */
+  /* box-shadow: 0 0; */
+  /* text-align: center; */
 }
 
 .munis {
