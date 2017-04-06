@@ -466,6 +466,11 @@ a {
   font-family: 'Roboto', sans-serif;
 }
 
+.profile-wrap .modal-body {
+    max-height: calc(100vh - 142px);
+    overflow-y: auto;
+}
+
 .degree {
   font-size: 72px;
   background-image: url(../images/cloudy01.png);

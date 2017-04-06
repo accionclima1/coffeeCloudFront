@@ -483,6 +483,8 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, local
 		labelMonthSelect: 'Seleccione un mes',
 		labelYearSelect: 'Seleccione un año',
     }
+     
+    
     $(".date-field").pickadate(spanishDateTimePickerOption);
 
     $scope.update = function () {
