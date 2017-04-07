@@ -4456,7 +4456,13 @@
 					      </div>
 	
 					      <div class="astro">
-					      	
+					      		<h6 class="textloader">Cargando Información Lunar <i class="fa fa-spinner fa-spin"></i> </h6>
+					      		<h6 class="texterror" style="display:none;">Error de conexión, intente de nuevo: <br/>
+						      		
+						      		<button class="btn"> <i class="fa fa-refresh" aria-hidden="true" style="font-size: 24px;"></i></button>
+						      		
+					      		</h6>
+
 					      </div>
 	
 						</div>
@@ -4482,32 +4488,52 @@
 							 decoded = "sanjose"
 						}
 						
+						var moonFunction = function (){
+							$.ajax({
+									    url: "https://api.wunderground.com/api/72df18b7f213607b/astronomy/lang:SP/q/" + country + "/" + decoded + ".json",
+							    dataType: "jsonp",
+							    success: function(parsed_json) {
+										  $('.textloader').hide();
+										   $('.texterror').hide();
+									      var moon_phase = parsed_json['moon_phase'];
+									      var moonData = {};
+									      moonData['Luna Iluminada'] = moon_phase['percentIlluminated'] + '%',
+									      moonData['Edad lunar'] = moon_phase['ageOfMoon'],
+									      moonData['Fase lunar'] = moon_phase['phaseofMoon'],
+									      moonData['Tiempo Real'] = moon_phase['current_time']['hour'] + ":" + moon_phase['current_time']['minute'],
+									      moonData['Amanecer'] = moon_phase['sunrise']['hour'] + ":" + moon_phase['sunrise']['minute'],
+									      moonData['Atardecer'] = moon_phase['sunset']['hour'] + ":" + moon_phase['sunset']['minute'];
+									
+									      for (index in moonData) {
+									        if (moonData.hasOwnProperty(index)) {
+									          var newHourlyString = $('<span/>').text(index);
+									          var newHourlyParagraph = $('<p/>').text(moonData[index]);
+									          $(".astro").append(newHourlyString);
+									          $(".astro").append(newHourlyParagraph);
+									        }
+									      }
+									},
+							    error: function() {
+								    $('.textloader').hide();
+								    $('.texterror').show();
+							    }
+							  });	
+						};
+						
+						moonFunction();
+						
+						var reloadFunc = function() {
+							$('.textloader').show();
+							moonFunction();
+						};
+						
+						$('.btn').click(function() {
+							reloadFunc();
+						});
+						
 						console.log(country,decoded);
 										
-						  $.ajax({
-						    url: "https://api.wunderground.com/api/72df18b7f213607b/astronomy/lang:SP/q/" + country + "/" + decoded + ".json",
-				    dataType: "jsonp",
-				    success: function(parsed_json) {
-					  
-				      var moon_phase = parsed_json['moon_phase'];
-				      var moonData = {};
-				      moonData['Luna Iluminada'] = moon_phase['percentIlluminated'] + '%',
-				      moonData['Edad lunar'] = moon_phase['ageOfMoon'],
-				      moonData['Fase lunar'] = moon_phase['phaseofMoon'],
-				      moonData['Tiempo Real'] = moon_phase['current_time']['hour'] + ":" + moon_phase['current_time']['minute'],
-				      moonData['Amanecer'] = moon_phase['sunrise']['hour'] + ":" + moon_phase['sunrise']['minute'],
-				      moonData['Atardecer'] = moon_phase['sunset']['hour'] + ":" + moon_phase['sunset']['minute'];
-				
-				      for (index in moonData) {
-				        if (moonData.hasOwnProperty(index)) {
-				          var newHourlyString = $('<span/>').text(index);
-				          var newHourlyParagraph = $('<p/>').text(moonData[index]);
-				          $(".astro").append(newHourlyString);
-				          $(".astro").append(newHourlyParagraph);
-				        }
-				      }
-				    }
-				  });
+						  
 				});
 			</script>
 		</script>
@@ -4673,6 +4699,7 @@
 							      <div class="modal-header">
 							        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 							        <h4 class="modal-title" id="myModalLabel">Editar: {{ editUnit.nombre }}</h4>
+							        
 							      </div>
 							      <div class="modal-body">
 							        
@@ -4723,7 +4750,13 @@
 														<input type="text"
 														      class="form-control"
 														      placeholder="Geo Referencia"
-														      ng-model="editUnit.ubicacion" ng-click="mapInit()" id="latlongid1" required></input>
+														      ng-model="editUnit.ubicacion" ng-click="mapInit()" id="latlongid1" required></input>	
+														       <span class="input-group-btn">
+														        <button class="btn btn-default" type="button" ng-click="toggle = !toggle; mapInit()">
+																        <i class="fa fa-map-marker" aria-hidden="true" ng-show="!toggle"></i>
+																        <i class="fa fa-times" aria-hidden="true" ng-show="toggle"></i>
+														        </button>
+														      </span>
 													</div>
 												</div>
 												<div class="col-xs-6">
@@ -4738,6 +4771,7 @@
 												<div class="clearfix"></div>
 												<div class="col-xs-12">
 													<div class="collapse map" >
+														<i class="fa fa-spinner fa-spin"></i>
 														<div id="map-canvas1" style="height:200px;width:100%;" ></div>
 													</div>
 												</div>
@@ -4776,13 +4810,13 @@
 														<label class="col-xs-12">Variedad</label>
 															<div class="col-xs-6" ng-repeat="variedad in variedades">
 													          <label ng-hide="variedad.name == 'cual?'">
-													            <input type="checkbox" ng-model="editUnit.variedad[variedad.name]"> {{variedad.name}} 
+													            <input type="checkbox" ng-model="editUnit.variedad[0][variedad.name]"> {{variedad.name}} 
 													          </label>
 													          
 													           <input type="text"
 														      class="form-control"
 														      placeholder="¿cual?"
-														      ng-model="editUnit.variedad['cual?']" ng-show="editUnit.variedad['otro'] && variedad.name == 'cual?'"></input>
+														      ng-model="editUnit.variedad[0]['cual?']" ng-show="editUnit.variedad[0]['otro'] && variedad.name == 'cual?'"></input>
 													        </div>
 													        
 														</div>
@@ -5501,11 +5535,12 @@
 							        
 							      </div>
 							      <div class="modal-footer">
-							        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-							        <button type="button" class="btn btn-primary" form="updateunitForm" ng-disabled="updateunitForm.$invalid" ng-click="updateUnitForm($event,editUnit._id)">Salvar Cambios</button>
-							        <div ng-show="sucMsg" class="bg-success row">
+								      <div ng-show="sucMsg" class="bg-success row text-center">
 									    <span>{{ sucMsg }}</span>
 									  </div>
+							          <button type="button" class="btn btn-primary" style="width: auto; line-height: 1.42857143; float: left;" form="updateunitForm" ng-disabled="updateunitForm.$invalid" ng-click="updateUnitForm($event,editUnit._id)">Salvar Cambios</button>
+							          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+							        
 							      </div>
 							    </div>
 							  </div>
@@ -5560,8 +5595,14 @@
 														<input type="text"
 														      class="form-control"
 														      placeholder="Geo Referencia"
-														      ng-model="newUnit.ubicacion" ng-click="mapInit()" id="latlongid" data-error="Campo requerido" required>
-														      <div class="help-block with-errors"></div></input>
+														      ng-model="newUnit.ubicacion" id="latlongid" data-error="Campo requerido" required>
+														      <div class="help-block with-errors"></div></input> 
+														      <span class="input-group-btn">
+														        <button class="btn btn-default" type="button" ng-click="toggle = !toggle; mapInit()">
+																        <i class="fa fa-map-marker" aria-hidden="true" ng-show="!toggle"></i>
+																        <i class="fa fa-times" aria-hidden="true" ng-show="toggle"></i>
+														        </button>
+														      </span>
 													</div>
 												</div>
 												<div class="col-xs-6">
@@ -5576,7 +5617,8 @@
 												<div class="clearfix"></div>
 												<div class="col-xs-12">
 													<div class="collapse map" >
-														<div id="map-canvas" style="height:200px;width:100%;" ></div>
+														<i class="fa fa-spinner fa-spin"></i>
+														<div id="map-canvas" style="height:200px;width:100%;" ng-class="{ offline: !IsInternetOnline }"></div>
 													</div>
 												</div>
 												<div class="clearfix"></div>
@@ -5634,7 +5676,7 @@
 													<div class="form-group">
 														<input type="text"
 														      class="form-control"
-														      placeholder="Distanciamiento"
+														      placeholder="Distanciamiento Ej: 2x1"
 														      ng-model="newUnit.distanciamiento"></input>
 														      (Metros)
 													</div>
@@ -6347,14 +6389,7 @@
 										  <input type="submit" class="btn btn-primary" submit="newunitForm" form="newunitForm" value="Guardar nueva"/>
 										  </form>
 							      </div>
-							      <div class="modal-footer">
-								      
-							        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-							        
-							        <div ng-show="sucMsg" class="bg-success row">
-									    <span>{{ sucMsg }}</span>
-									  </div>
-							      </div>
+							     
 							    </div>
 							  </div>
 							</div>
@@ -6390,15 +6425,31 @@
 																      ></input>
 															</div>
 														</div>
+													
 														<div class="col-xs-12">
-															<div class="form-group">
-																<input type="text"
-																      class="form-control"
-																      placeholder="Georeferenciación"
-																      ng-model="editUnit.lote[$index].georeferenciacion"	
-																      ></input>
-															</div>
-														</div>
+													<div class="form-group">
+														<input type="text"
+														      class="form-control"
+														      placeholder="Geo Referencia"
+														      ng-model="editUnit.lote[$index].georeferenciacion" id="{{ 'latlongid' + $index }}" required></input>	
+														       <span class="input-group-btn">
+														        <button class="btn btn-default" type="button" ng-click="toggle = !toggle; mapInit($index)">
+																        <i class="fa fa-map-marker" aria-hidden="true" ng-show="!toggle"></i>
+																        <i class="fa fa-times" aria-hidden="true" ng-show="toggle"></i>
+														        </button>
+														      </span>
+													</div>
+												</div>
+												
+												<div class="clearfix"></div>
+												<div class="col-xs-12">
+													<div class="collapse map" >
+														<i class="fa fa-spinner fa-spin"></i>
+														<div id="{{ 'map-canvas' + $index }}" style="height:200px;width:100%;" ></div>
+													</div>
+												</div>
+												<div class="clearfix"></div>
+														
 														<div class="col-xs-12">
 															<div class="form-group">
 																<input type="text"

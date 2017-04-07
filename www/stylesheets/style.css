@@ -439,6 +439,50 @@ a {
   width: 100%;
 }
 
+.profile-wrap {
+  padding-bottom: 32px;
+}
+
+.profile-wrap .modal-footer {
+  position: relative;
+}
+
+.profile-wrap .map .fa-spinner {
+  position: absolute;
+  top: 27%;
+}
+
+
+.profile-wrap .map .offline {
+  background-color: #f4d2d2;
+  position: relative;
+  text-align: center;
+}
+
+.profile-wrap .map .offline:before {
+  content: "Fuera de alcanze, intente de nuevo";
+  color: red;
+  line-height: 64px
+}
+
+#latlongid,
+#latlongid1 {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+  width: calc(100% - 33px);
+}
+
+.profile-wrap .input-group-btn {
+  position: absolute;
+  right: 46px;
+  top: 0;
+}
+
+.profile-wrap .input-group-btn .btn {
+  /* line-height: 36px; */
+  font-size: 20px;
+}
+
 .home-wrap .modal {
   color: #333;
   z-index: 99999;
@@ -469,6 +513,10 @@ a {
 .profile-wrap .modal-body {
     max-height: calc(100vh - 142px);
     overflow-y: auto;
+}
+
+#myModal2 .modal-body {
+    max-height: calc(100vh - 76px);
 }
 
 .degree {
@@ -527,6 +575,12 @@ a {
     padding: 8px 24px 32px;
     box-shadow: 1px 1px 1px rgba(0,0,0,0.05);
     margin-bottom: 12px;
+}
+
+.astro .btn {
+  background: transparent;
+  margin-top: 12px;
+  border-color: #fff;
 }
 
 .astro span {
@@ -973,6 +1027,10 @@ input:checked + label + #otherArea {
     padding: 8px 0;
     margin: 6px 0;
     color: green;
+    position: absolute;
+    left: 15px;
+    right: 15px;
+    top: -38px;
 }
 
 .profile-wrap .page-header {

@@ -20,8 +20,8 @@ function ($scope, $state, auth, $window, $timeout, PouchDB) {
     };
 
     $scope.logIn = function () {
-        var isServerToLocalSync=false;
-        var isLocalToServerSync=false;
+        var isServerToLocalSync = false;
+        var isLocalToServerSync = false;
         var lastSyncDateTime = PouchDB.GetLastSyncDateTime();
         $scope.user.lastSyncDateTime = lastSyncDateTime;
         auth.logIn($scope.user).error(function (error) {
@@ -35,32 +35,66 @@ function ($scope, $state, auth, $window, $timeout, PouchDB) {
                     $state.go('home');
                 }
                 else if (result.status == 'success') {
-                    console.log("Befor PouchDB.SynLocalDataToServerDb() execution finished");
-                    PouchDB.SynServerLoginReturnedDataToLocalDb(data).then(function (serverResult) {
-                        console.log("server to local sync result" + JSON.stringify(serverResult));
-                        if (serverResult.status == 'success') {
-                            isServerToLocalSync = true;
-                            PouchDB.SynLocalDataToServerDb().then(function (localResult) {
-                                console.log("local to server sync result=" + JSON.stringify(localResult));
-                                if (localResult.status == 'success') {
-                                    isLocalToServerSync = true;
-                                    if (isLocalToServerSync && isServerToLocalSync)
-                                    {
-                                        PouchDB.SetLastSyncDateTime(Number(new Date()));
-                                        $state.go('home');
-                                    }
-                                    else {
-                                        console.log("data not sync")
-                                        $state.go('home');
-                                    }
+                    var varitiesData = [];
+                    if (data.data != undefined && data.data.varieties != undefined && data.data.varieties.length > 0) {
+                        varitiesData = data.data.varieties;
+                    }
+                    PouchDB.SaveVarietiesToPouchDB(varitiesData).then(function (result) {
+                        if (result.status == 'fail') {
+                            $scope.error = result.message;
+                            console.log("SaveVarietiesToPouchDB Not written to pouch Db")
+                            PouchDB.SynServerLoginReturnedDataToLocalDb(data).then(function (serverResult) {
+                                console.log("server to local sync result" + JSON.stringify(serverResult));
+                                if (serverResult.status == 'success') {
+                                    isServerToLocalSync = true;
+                                    PouchDB.SynLocalDataToServerDb().then(function (localResult) {
+                                        console.log("local to server sync result=" + JSON.stringify(localResult));
+                                        if (localResult.status == 'success') {
+                                            isLocalToServerSync = true;
+                                            if (isLocalToServerSync && isServerToLocalSync) {
+                                                PouchDB.SetLastSyncDateTime(Number(new Date()));
+                                                $state.go('home');
+                                            }
+                                            else {
+                                                console.log("data not sync")
+                                                $state.go('home');
+                                            }
+                                        }
+                                        else {
+                                            console.log("data not sync")
+                                            $state.go('home');
+                                        }
+                                    });
                                 }
-                                else {
-                                    console.log("data not sync")
-                                    $state.go('home');
-                                }
-                            });
+                            })
                         }
-                    })
+                        else {
+                            PouchDB.SynServerLoginReturnedDataToLocalDb(data).then(function (serverResult) {
+                                console.log("server to local sync result" + JSON.stringify(serverResult));
+                                if (serverResult.status == 'success') {
+                                    isServerToLocalSync = true;
+                                    PouchDB.SynLocalDataToServerDb().then(function (localResult) {
+                                        console.log("local to server sync result=" + JSON.stringify(localResult));
+                                        if (localResult.status == 'success') {
+                                            isLocalToServerSync = true;
+                                            if (isLocalToServerSync && isServerToLocalSync) {
+                                                PouchDB.SetLastSyncDateTime(Number(new Date()));
+                                                $state.go('home');
+                                            }
+                                            else {
+                                                console.log("data not sync")
+                                                $state.go('home');
+                                            }
+                                        }
+                                        else {
+                                            console.log("data not sync")
+                                            $state.go('home');
+                                        }
+                                    });
+                                }
+                            })
+                        }
+                    });
                 }
             });
         });
