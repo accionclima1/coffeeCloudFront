@@ -110,17 +110,20 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
                 caldovicosa: false,
                 caldobordeles: false,
                 otrocual: false,
+                cual: '',
             },
 
             biologicalOptionsMonths: {
                 verticiliumlecanii: '',
                 bacilussutillis: '',
                 otrocual: '',
+                
             },
             biologicalOptions: {
                 verticiliumlecanii: false,
                 bacilussutillis: false,
                 otrocual: false,
+                cual: '',
             },
             sistemicoOptionsMonths: {
                 opus: '',
@@ -158,7 +161,8 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
                 halconextra: false,
                 beken: false,
                 estrobirulina: false,
-                otro: false
+                otro: false,
+                cual: '',
             }
 
 
