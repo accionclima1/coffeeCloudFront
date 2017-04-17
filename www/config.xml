@@ -43,8 +43,8 @@
         <preference name="phonegap-version"       value="3.5.0" />
     -->
 
-    <!-- Plugins -->
-	<plugin spec="https://github.com/jrstarke/webview-debug.git" source="git" />
+    <!-- Plugins 
+	<plugin spec="https://github.com/jrstarke/webview-debug.git" source="git" />-->
 	
 	<gap:plugin name="org.apache.cordova.geolocation" source="npm" />
     <!-- Core plugins -->
@@ -58,9 +58,19 @@
 
     <!-- Define app icon for each platform. -->
     <icon src="icon.png" />
-
+    
     <!-- Define app splash screen for each platform. -->
-    <splash src="splash.png" />
+    <gap:splash src="splash.png"       gap:platform="android" gap:qualifier="port-ldpi" />
+    <gap:splash src="splash.png"       gap:platform="android" gap:qualifier="port-mdpi" />
+    <gap:splash src="splash.png"       gap:platform="android" gap:qualifier="port-hdpi" />
+    <gap:splash src="splash.png"      gap:platform="android" gap:qualifier="port-xhdpi" />
+    <gap:splash src="splash.png"              gap:platform="blackberry" />
+    <gap:splash src="splash.png"         gap:platform="ios"     width="320" height="480" />
+    <gap:splash src="splash.png"      gap:platform="ios"     width="640" height="960" />
+    <gap:splash src="splash.png" gap:platform="ios"     width="640" height="1136" />
+    <gap:splash src="splash.png"           gap:platform="ios"     width="768" height="1024" />
+    <gap:splash src="splash.png"          gap:platform="ios"     width="1024" height="768" />
+    <gap:splash src="splash.png"      gap:platform="winphone" />
 
     <gap:config-file platform="ios" parent="CFBundleShortVersionString">
     <string>100</string>
