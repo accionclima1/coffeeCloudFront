@@ -22,7 +22,7 @@
 	
 	<script src="javascripts/angular-ui-router.js"></script>
 	<script src="bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
-	<script src = "bower_components/angular-scroll-glue/src/scrollglue.js"></script>
+	<script src="bower_components/angular-scroll-glue/src/scrollglue.js"></script>
 	<script src="javascripts/jquery-ui.js"></script>
 	<script src="javascripts/picker.js"></script>
 	<script src="javascripts/picker.date.js"></script>
@@ -72,6 +72,8 @@
 <script type="text/javascript" src="https://freegeoip.net/json/?callback=setupGeo"></script>	
 
 	<style> .glyphicon-thumbs-up { cursor:pointer; } </style>
+	
+	<meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
 </head>
 <body ng-app="coffeeScript" ng-controller="MainCtrl">
 	<div class="loader">
