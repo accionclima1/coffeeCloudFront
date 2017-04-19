@@ -949,7 +949,7 @@ app.factory('user', ['$http', 'auth', function ($http, auth) {
     return o;
 }]);
 //authorize service
-app.factory('auth', ['$http', '$window', function ($http, $window) {
+app.factory('auth', ['$http', '$state', '$window', function ($http, $state, $window) {
     var auth = {};
 
     auth.saveToken = function (token) {
@@ -1045,7 +1045,8 @@ app.factory('auth', ['$http', '$window', function ($http, $window) {
 
     auth.logOut = function () {
         $window.localStorage.removeItem('flapper-news-token');
-        window.location.href = '/#/login';
+        $state.go('login');
+        
     };
 
     return auth;

@@ -447,19 +447,22 @@ a {
   position: relative;
 }
 
-.profile-wrap .map .fa-spinner {
+.profile-wrap .map .fa-spinner,
+.register-profile-wrap .map .fa-spinner {
   position: absolute;
   top: 27%;
 }
 
 
-.profile-wrap .map .offline {
+.profile-wrap .map .offline,
+.register-profile-wrap .map .offline  {
   background-color: #f4d2d2;
   position: relative;
   text-align: center;
 }
 
-.profile-wrap .map .offline:before {
+.profile-wrap .map .offline:before,
+.register-profile-wrapp .map .offline:before {
   content: "Fuera de alcanze, intente de nuevo";
   color: red;
   line-height: 64px
@@ -472,13 +475,15 @@ a {
   width: calc(100% - 33px);
 }
 
-.profile-wrap .input-group-btn {
+.profile-wrap .input-group-btn,
+.register-profile-wrap .input-group-btn  {
   position: absolute;
   right: 46px;
   top: 0;
 }
 
-.profile-wrap .input-group-btn .btn {
+.profile-wrap .input-group-btn .btn,
+.register-profile-wrap .input-group-btn .btn {
   /* line-height: 36px; */
   font-size: 20px;
 }

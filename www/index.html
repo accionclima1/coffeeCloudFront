@@ -72,7 +72,6 @@
 <script type="text/javascript" src="https://freegeoip.net/json/?callback=setupGeo"></script>	
 
 	<style> .glyphicon-thumbs-up { cursor:pointer; } </style>
-	<meta http-equiv="Content-Security-Policy" content="default-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src *">
 </head>
 <body ng-app="coffeeScript" ng-controller="MainCtrl">
 	<div class="loader">
@@ -96,12 +95,12 @@
 	      <li ng-class="{ active: isActive('/news') }"><a href="#/news" snap-toggle><i class="fa fa-bell"></i> Noticias</a></li>
 	      <li ng-class="{ active: isActive('/support') }"><a href="#/support" snap-toggle><i class="fa fa-comment"></i> Comunicación</a></li>
 	      <li ng-class="{ active: isActive('/profile') }"><a href="#/profile" snap-toggle><i class="fa fa-user"></i> Perfil</a></li>
-	      <li><a href="#/home" ng-click="logOut()"><i class="fa fa-power-off"></i> Salir</a></li>
+	      <li><a href="#/login" ng-click="logOut()" snap-close><i class="fa fa-power-off"></i> Salir</a></li>
 	    </ul>
 	  </nav>
 	
 	
-	  <div class="pushbox" snap-content snap-opt-disable="'right'">
+	  <div class="pushbox" snap-content snap-opt-disable="'right'" id="snapbox">
 	  	<div class="nav-switch" ng-controller="NavCtrl"><button ng-show="isLoggedIn()" class="switch glyphicon glyphicon-menu-hamburger" type="button" snap-toggle></button></div>
 				<ui-view></ui-view>
 	  </div>
@@ -1120,20 +1119,21 @@
 
 				  <form ng-submit="logIn()">
 				    <img src="images/pages-logo-dark.png" alt="" class="login-img img-responsive"/>
-				    <h1 class="text-center" style="color: #fff;font-family: 'Lato', sans-serif;font-weight: 300;">Coffee Cloud Demo <small>beta</small></h1>
+				    <img src="images/analogo.svg" alt="" class="ana-img img-responsive"/>
 				    <div class="form-group">
 				       <label for="email">Usuario</label>
 				      <input type="text" name="email"
 				      class="form-control"
-				      ng-model="user.username"></input>
+				      ng-model="user.username" ng-disabled="isFormSubmited"></input>
 				    </div>
 				    <div class="form-group">
 				      <label for="password">Contraseña</label>
 				      <input type="password" name="password"
 				      class="form-control"
-				      ng-model="user.password"></input>
+				      ng-model="user.password" ng-disabled="isFormSubmited"></input>
 				    </div>
-				    <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+				    <h6 ng-show="isFormSubmited" class="text-center" style="position: absolute;width: 100%;margin-left: -15px;"><i class="fa fa-spinner fa-spin"></i></h6>
+				    <button type="submit" class="btn btn-primary" ng-disabled="isFormSubmited">Iniciar Sesión</button>
 				    <a href="#/register">¿No tiene cuenta?</a>
 				    <a href="#/forgotpassword">Cambia la contraseña</a>
 				    <div class="row signature">
@@ -1173,7 +1173,7 @@
 				      ng-model="user.Email"></input>
 				    </div>
 				    
-				    <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+				    <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
 				    <a href="#/register">¿No tiene cuenta?</a>
 				    <a href="#/login">Iniciar sesión </a>
 				    <div class="row signature">
@@ -1207,20 +1207,20 @@
 				    <img src="images/pages-logo-dark.png" alt="" class="login-img img-responsive"/>
 				    <img src="images/LogoICAFE.svg" alt="" class="ana-img img-responsive"/>
 				    <div class="form-group">
-				      <label for="email">New Password</label>
+				      <label for="email">Nueva Contraseña</label>
 				      <input type="password" name="password"
 				      class="form-control"
 				      ng-model="user.password"></input>
 				    </div>
 				    <div class="form-group">
-				      <label for="email">Confirm Password</label>
+				      <label for="email">Confirmar Contraseña</label>
 				      <input type="password" name="cpassword"
 				      class="form-control"
 				      ng-model="user.cpassword"></input>
 				    </div>
-				    <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-				    <a href="#/register">¿No tiene cuenta?</a>
-				    <a href="#/login">Iniciar sesión</a>
+				    <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
+				   
+				    
 				    <div class="row signature">
 					    <div class="col-xs-6">
 						     <img src="images/USAIDLOGO.png" alt="" class="login-usaid img-responsive"/>
@@ -1252,13 +1252,14 @@
 				    <img src="images/pages-logo-dark.png" alt="" class="login-img img-responsive"/>
 				    <img src="images/LogoICAFE.svg" alt="" class="ana-img img-responsive"/>
 				    <div class="form-group">
+					    <p>Un correo electronico a sido envidado, por favor inserte el codigo OTP</p>
 				       <label for="email">OTP</label>
 				      <input type="text" name="number"
 				      class="form-control"  maxlength="6"
 				      ng-model="user.otp"></input>
 				    </div>
 				    
-				    <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+				    <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
 				<!--     <a href="#/register">¿No tiene cuenta?</a>
 				    <a href="#/login">Atrás para iniciar sesión </a>
 				    <div class="row signature">
