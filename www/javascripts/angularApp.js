@@ -1167,6 +1167,33 @@ app.factory('methods', ['$http', 'auth', function ($http, auth) {
     return o;
 }]);
 
+app.factory('methodsGallo', ['$http', 'auth', function ($http, auth) {
+    var o = {
+        chats: []
+    };
+    o.get = function () {
+        return $http.get('http://coffeecloud.centroclima.org/admin/methodsGallo/').success(function (data) {
+            return data;
+        });
+    };
+    o.create = function (methodGallo) {
+        return $http.post('http://coffeecloud.centroclima.org/admin/methodsGallo', methodGallo, {
+            headers: { Authorization: 'Bearer ' + auth.getToken() }
+        }).success(function (data) {
+            return data;
+        });
+    };
+    o.update = function (methodGallo) {
+        return $http.put('http://coffeecloud.centroclima.org/admin/methodsGallo', methodGallo, {
+            headers: { Authorization: 'Bearer ' + auth.getToken() }
+        }).success(function (data) {
+            return data;
+        });
+    };
+
+    return o;
+}]);
+
 //campocontoller Fact
 app.factory('campoService', ['$http', 'auth', function ($http, auth) {
     var o = {
