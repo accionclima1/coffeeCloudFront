@@ -10,8 +10,8 @@ function ($scope, auth, socket, user,Upload,$base64) {
 	$scope.adminImage='';
 	$scope.adminName='';
 	//$scope.UserName = 'User';
-	$scope.UserImage = '../images/ChatUser.png';
-	$scope.UserImageBottom = '../images/ChatUser.png';
+	$scope.UserImage = '/images/ChatUser.png';
+	$scope.UserImageBottom = '/images/ChatUser.png';
 	// $scope.UserNameDisplay = 'User';
 	$scope.IsCall = false;
 
