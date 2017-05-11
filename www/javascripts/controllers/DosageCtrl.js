@@ -24,12 +24,12 @@ function($scope, $state, auth,localStorageService, socket){
     
     var resultado = $scope.dosage.productName / litrosHa;
     
-    $scope.dosage.resultado = resultado;
+    $scope.dosage.resultado = resultado.toFixed(2);
     
     if($scope.dosage.productType == 'Ojo de gallo' && $scope.dosage.producto2) {
 	    	var resultadoS = 2000 / litrosHa;
     
-			$scope.dosage.resultadoS = resultadoS;
+			$scope.dosage.resultadoS = resultadoS.toFixed(2);
     }
     
   }

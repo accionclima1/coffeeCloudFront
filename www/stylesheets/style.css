@@ -126,7 +126,7 @@ a {
 
 .navbar-default.pull-left .navbar-nav li.active a {
   color:#fff;
-  background-color:#fe8515;
+  background-color: #fe8515 !important;
 }
 
 .navbar-default.pull-left .navbar-nav li a {
@@ -454,7 +454,7 @@ a {
 }
 
 
-.profile-wrap .map .offline,
+/*.profile-wrap .map .offline,
 .register-profile-wrap .map .offline  {
   background-color: #f4d2d2;
   position: relative;
@@ -466,7 +466,7 @@ a {
   content: "Fuera de alcanze, intente de nuevo";
   color: red;
   line-height: 64px
-}
+}*/
 
 #latlongid,
 #latlongid1 {
@@ -582,11 +582,13 @@ a {
     margin-bottom: 12px;
 }
 
+
 .astro .btn {
   background: transparent;
   margin-top: 12px;
   border-color: #fff;
 }
+
 
 .astro span {
     font-size: 14px;
@@ -1032,6 +1034,9 @@ input:checked + label + #otherArea {
     padding: 8px 0;
     margin: 6px 0;
     color: green;
+}
+
+.profile-wrap .modal .bg-success.row {
     position: absolute;
     left: 15px;
     right: 15px;
@@ -1303,9 +1308,84 @@ a.unidad {
 .testControls > .col-md-12 button:hover {
 background-color: #3498db  !important;
     border-color: #3498db;
+
   }
 
 .panel-group .panel-title a {
     color: #666;
     display: block;
     width: 100%;
+}
+
+/* visita module */
+
+.visita-controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #21aaf7;
+    padding: 15px;
+}
+
+.visita-controls input[type=text] {
+     background: transparent;
+     border: 0;
+     box-shadow: 0 0 0;
+     color: #fff;
+     border-radius: 0;
+     /* color: #fe852d; */
+}
+
+.visita-controls input::placeholder {
+  color: #fff;
+}
+
+.visita-controls input[type=text]:focus {
+  background: rgba(255, 255, 255, 0.21);
+}
+
+.visita-controls form {
+  margin-bottom: 0;
+}
+.visita-controls form button {
+  border-radius: 0;
+  border: 1px solid #fe852d;
+  background: #fe852d;
+  color: #fff;
+}
+.visita-controls .input-group {
+  border-bottom: 5px solid #fe852d;
+}
+.visita-controls-opt {
+    margin: 0;
+}
+
+.visita-controls-opt label {
+  padding: 0;
+  color: #fff;
+  background: #aaa;
+  display: block;
+  padding: 14px;
+}
+
+.visita-controls-opt input[type=radio] {
+    display: none;
+}
+
+.visita-controls-opt input[type=radio]:checked + label {
+    background: #fe852d;
+}
+
+@media (max-width: 320px) {
+  
+  .unidad span {
+    max-width: 85px;
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+
+  }
+
+}

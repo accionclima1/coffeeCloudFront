@@ -1,3 +1,4 @@
+/// <reference path="angularApp.js" />
 var app = angular.module('coffeeScript', ['btford.socket-io', 'ui.router', 'snap', 'luegg.directives', 'LocalStorageModule', 'ngSanitize', 'ngFileUpload', 'base64']);
 
 app.config(['localStorageServiceProvider', function (localStorageServiceProvider) {
@@ -8,6 +9,7 @@ app.config(function ($httpProvider) {
     //Enable cross domain calls
     $httpProvider.defaults.useXDomain = true;
 });
+
 
 
 app.factory('PouchDB', ['$http', 'unit', 'auth', '$q', '$rootScope', '$window', function ($http, unit, auth, $q, $rootScope, $window) {
@@ -450,6 +452,7 @@ app.factory('PouchDB', ['$http', 'unit', 'auth', '$q', '$rootScope', '$window', 
             data: {},
             message: ''
         };
+        
         if (userData.data != undefined && userData.data.userData) {
             var element = userData.data.userData;
             delete element["__v"];
@@ -458,11 +461,61 @@ app.factory('PouchDB', ['$http', 'unit', 'auth', '$q', '$rootScope', '$window', 
             return $q.when(pouchPromise).then(function (doc) {
                 doc.email = element.email;
                 doc.image = element.image;
-                doc.phone = element.role;
+                doc.phone = element.phone;
                 doc.salt = element.salt;
                 doc.type = element.type;
                 doc.units = element.units;
                 doc.username = element.username;
+                var UpdatePouchPromise = localPouchDB.put(doc);
+                return $q.when(UpdatePouchPromise).then(function (res) {
+                    if (res && res.ok == true) {
+                        console.log("user data updated");
+                        result.status = 'success';
+                        return result;
+                    }
+                }).catch(function (err) {
+                    console.log(err);
+                    result.status = 'fail';
+                    result.message = err;
+                    return result;
+                });
+            }).catch(function (err) {
+                if (err.status == 404) {
+                    return localPouchDB.put(element).then(function () {
+                        console.log("user data inserted");
+                        result.status = 'success';
+                        return result;
+                    }).catch(function (err) {
+                        result.status = 'fail';
+                        result.message = err;
+                        return result;
+                    });
+                }
+
+            });
+        }
+
+    }
+
+
+    pouchDbFactory.SaveUserToPouchDB = function (userData, userId) {
+        var result = {
+            status: '',
+            data: {},
+            message: ''
+        };
+        if (userData) {
+            var element = userData;
+            var pouchPromise = localPouchDB.get(userId);
+                //doc.email = element.email;
+            return $q.when(pouchPromise).then( function (doc) {
+                doc.image = element.image;
+                doc.phone = element.phone;
+                doc.salt = element.salt;
+                doc.type = element.type;
+                doc.units = element.units;
+                doc.username = element.username;
+                doc.email = element.email;
                 var UpdatePouchPromise = localPouchDB.put(doc);
                 return $q.when(UpdatePouchPromise).then(function (res) {
                     if (res && res.ok == true) {
@@ -839,10 +892,48 @@ app.directive('onlyNum', function () {
     };
 });
 
+
+app.directive('manageUnit', function () {
+    var directive = {};
+    //restrict = E, signifies that directive is Element directive
+    directive.restrict = 'E';
+    //template replaces the complete element with its text. 
+    //directive.template = "Student: <b>saddfffgsdgf</b> , Roll No: <b>dfgdfgdfgfdgdf</b>";
+    directive.templateUrl = "views/shared/manage-unit.html";
+    //scope is used to distinguish each student element based on criteria.
+    directive.scope = {
+        editunitid: "="
+    }
+    directive.controller = 'UnitManagerCtrl',
+    //compile is called during application initialization. AngularJS calls it once when html page is loaded.
+    directive.compile = function (element, attributes) {
+    }
+    return directive;
+});
+
+//app.directive('editUnit', function () {
+//    var directive = {};
+//    //restrict = E, signifies that directive is Element directive
+//    directive.restrict = 'E';
+//    //template replaces the complete element with its text. 
+//    //directive.template = "Student: <b>saddfffgsdgf</b> , Roll No: <b>dfgdfgdfgfdgdf</b>";
+//    directive.templateUrl = "Views/shared/edit-unit.html";
+//    //scope is used to distinguish each student element based on criteria.
+//    directive.scope = {
+
+//    }
+//    directive.controller = 'editUnitCtrl',
+//    //compile is called during application initialization. AngularJS calls it once when html page is loaded.
+//    directive.compile = function (element, attributes) {
+//    }
+//    return directive;
+//});
+
 // Services for widget
 app.factory('widget', ['$http', function ($http) {
     var w = {};
     w.getAll = function () {
+	    
         return $http.get('http://coffeecloud.centroclima.org/getWidgets').success(function (data) {
             return data;
         });
@@ -876,11 +967,13 @@ app.factory('posts', ['$http', 'auth', function ($http, auth) {
     };
     o.getAll = function () {
         return $http.get('http://coffeecloud.centroclima.org/posts').success(function (data) {
+
             angular.copy(data, o.posts);
         });
     };
     o.create = function (post) {
         return $http.post('http://coffeecloud.centroclima.org/posts', post, {
+
             headers: { Authorization: 'Bearer ' + auth.getToken() }
         }).success(function (data) {
             o.posts.push(data);
@@ -888,6 +981,7 @@ app.factory('posts', ['$http', 'auth', function ($http, auth) {
     };
     o.upvote = function (post) {
         return $http.put('http://coffeecloud.centroclima.org/posts/' + post._id + '/upvote', null, {
+
             headers: { Authorization: 'Bearer ' + auth.getToken() }
         })
           .success(function (data) {
@@ -914,6 +1008,18 @@ app.factory('posts', ['$http', 'auth', function ($http, auth) {
     };
     return o;
 }]);
+
+app.factory('mailer', ['$http', 'auth', function ($http, auth) {
+    var o = {};
+    o.sendMail = function (mailRequest) {
+        var serviceURL = global.setting.getServiceUrl() + "mailer";
+        return $http.post(serviceURL, mailRequest).success(function (data) {
+            console.log(data);
+        });
+    }
+    return o;
+}]);
+
 // User profile service
 app.factory('user', ['$http', 'auth', function ($http, auth) {
     var o = {
@@ -939,10 +1045,18 @@ app.factory('user', ['$http', 'auth', function ($http, auth) {
     };
 
     o.update = function (user) {
-        return $http.put('http://coffeecloud.centroclima.org/users/' + user._id, user, {
+        return $http.put(global.setting.getServiceUrl() + 'users/' + user._id, user, {
             headers: { Authorization: 'Bearer ' + auth.getToken() }
         }).success(function (data) {
             return data
+        });
+    };
+
+    o.searchUserUnit = function (searchObj) {
+        return $http.post(global.setting.getServiceUrl() + 'searchUserUnit', searchObj, {
+            headers: { Authorization: 'Bearer ' + auth.getToken() }
+        }).then(function (res) {
+            return res.data;
         });
     };
 
@@ -1001,7 +1115,8 @@ app.factory('auth', ['$http', '$state', '$window', function ($http, $state, $win
     };
 
     auth.register = function (user) {
-        return $http.post('http://coffeecloud.centroclima.org/register', user).success(function (data) {
+        var serviceURL = global.setting.getServiceUrl() + "register";
+        return $http.post(serviceURL, user).success(function (data) {
             auth.saveToken(data.token);
         });
     };
@@ -1016,7 +1131,6 @@ app.factory('auth', ['$http', '$state', '$window', function ($http, $state, $win
     // for GenOtp(), VerifyOtp(), ChangePassword()
 
     auth.GenOtp = function (user) {
-
         /*return $http.post('http://coffeecloud.centroclima.org/requestpasswordchange', user).success(function(data){
           auth.saveToken(data.token);
         });*/
@@ -1025,7 +1139,6 @@ app.factory('auth', ['$http', '$state', '$window', function ($http, $state, $win
         });
     };
     auth.VerifyOtp = function (user) {
-
         /*return $http.post('http://coffeecloud.centroclima.org/changeauthenticate', user).success(function(data){
           auth.saveToken(data.token);
         });*/
@@ -1034,7 +1147,6 @@ app.factory('auth', ['$http', '$state', '$window', function ($http, $state, $win
         });
     };
     auth.ChangePassword = function (user) {
-
         /*return $http.post('http://coffeecloud.centroclima.org/passwordchange', user).success(function(data){
           auth.saveToken(data.token);
         });*/
@@ -1067,7 +1179,6 @@ app.factory('unit', ['$http', 'auth', '$window', function ($http, auth, $window)
 
     o.create = function (unit, id) {
         //localhost unit
-
         return $http.post('http://coffeecloud.centroclima.org/users/' + id + '/units', unit, {
             headers: { Authorization: 'Bearer ' + auth.getToken() }
         }).success(function (data) {
@@ -1077,7 +1188,6 @@ app.factory('unit', ['$http', 'auth', '$window', function ($http, auth, $window)
 
     o.update = function (unit, id, unitData) {
         //localhost unit
-
         return $http.put('http://coffeecloud.centroclima.org/users/' + id + '/units/' + unit, unitData, {
             headers: { Authorization: 'Bearer ' + auth.getToken() }
         }).success(function (data) {
@@ -1185,6 +1295,7 @@ app.factory('methodsGallo', ['$http', 'auth', function ($http, auth) {
     };
     o.update = function (methodGallo) {
         return $http.put('http://coffeecloud.centroclima.org/admin/methodsGallo', methodGallo, {
+
             headers: { Authorization: 'Bearer ' + auth.getToken() }
         }).success(function (data) {
             return data;
@@ -1402,7 +1513,8 @@ function ($stateProvider, $urlRouterProvider) {
       .state('register-profile', {
           url: '/register-profile',
           templateUrl: '/register-profile.html',
-          controller: 'UnitCtrl',
+          //controller: 'UnitCtrl',
+          controller:'RegisterCtrl',
           onEnter: ['$state', 'auth', function ($state, auth) {
               if (auth.isLoggedIn()) {
                   //$state.go('home');
@@ -1433,6 +1545,16 @@ function ($stateProvider, $urlRouterProvider) {
           url: '/gallo',
           templateUrl: '/gallo.html',
           controller: 'GalloCtrl',
+          onEnter: ['$state', 'auth', function ($state, auth) {
+              if (!auth.isLoggedIn()) {
+                  $state.go('login');
+              }
+          }]
+      })
+      .state('visita', {
+          url: '/visita',
+          templateUrl: '/visita.html',
+          controller: 'VisitaCtrl',
           onEnter: ['$state', 'auth', function ($state, auth) {
               if (!auth.isLoggedIn()) {
                   $state.go('login');
@@ -1548,4 +1670,5 @@ function ($stateProvider, $urlRouterProvider) {
 
     $urlRouterProvider.otherwise('home');
 }]);
+
 
