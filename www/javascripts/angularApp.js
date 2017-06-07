@@ -899,7 +899,7 @@ app.directive('manageUnit', function () {
     directive.restrict = 'E';
     //template replaces the complete element with its text. 
     //directive.template = "Student: <b>saddfffgsdgf</b> , Roll No: <b>dfgdfgdfgfdgdf</b>";
-    directive.templateUrl = "views/shared/manage-unit.html";
+    directive.templateUrl = "Views/shared/manage-unit.html";
     //scope is used to distinguish each student element based on criteria.
     directive.scope = {
         editunitid: "="
@@ -1134,23 +1134,35 @@ app.factory('auth', ['$http', '$state', '$window', function ($http, $state, $win
         /*return $http.post('http://coffeecloud.centroclima.org/requestpasswordchange', user).success(function(data){
           auth.saveToken(data.token);
         });*/
-        return $http.post('http://coffeecloud.centroclima.org/requestpasswordchange', user).success(function (data) {
+        //return $http.post('http://coffeecloud.centroclima.org/requestpasswordchange', user).success(function (data) {
+        //    return data;
+        //});
+        var serviceURL = global.setting.getServiceUrl() + "requestpasswordchange";
+        return $http.post(serviceURL, user).success(function (data) {
             return data;
         });
     };
     auth.VerifyOtp = function (user) {
-        /*return $http.post('http://coffeecloud.centroclima.org/changeauthenticate', user).success(function(data){
+        /*return $http.post('http://icafe.centroclima.org/changeauthenticate', user).success(function(data){
           auth.saveToken(data.token);
         });*/
-        return $http.post('http://coffeecloud.centroclima.org/changeauthenticate', user).success(function (data) {
+        //return $http.post('http://icafe.centroclima.org/changeauthenticate', user).success(function (data) {
+        //    return data;
+        //});
+        var serviceURL = global.setting.getServiceUrl() + "changeauthenticate";
+        return $http.post(serviceURL, user).success(function (data) {
             return data;
         });
     };
     auth.ChangePassword = function (user) {
-        /*return $http.post('http://coffeecloud.centroclima.org/passwordchange', user).success(function(data){
+        /*return $http.post('http://icafe.centroclima.org/passwordchange', user).success(function(data){
           auth.saveToken(data.token);
         });*/
-        return $http.post('http://coffeecloud.centroclima.org/passwordchange', user).success(function (data) {
+        //return $http.post('http://icafe.centroclima.org/passwordchange', user).success(function (data) {
+        //    return data;
+        //});
+        var serviceURL = global.setting.getServiceUrl() + "passwordchange";
+        return $http.post(serviceURL, user).success(function (data) {
             return data;
         });
     };
