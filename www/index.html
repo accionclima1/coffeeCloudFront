@@ -117,7 +117,7 @@
 		 <div class="container">
 			   	<div class="row">
 			   		<div class="col-md-6 col-md-offset-3">
-			   		  <div class="page-header">
+			   		  <div class="page-header"> 
 				        <h2>¡Hola!</h2>
 				        <p>Bienvenido {{ currentUser() }}</p>
 				      </div>
@@ -133,8 +133,8 @@
 					   
 				      </div>
 					  <br />
-				       <a href="#/weather" class="btn btn-primary">Mas Informacion</a> <br />
-				       <a href="#/forecast" class="btn btn-primary">Pronostico 10 dias</a> <br />
+				       <a href="#/weather" class="btn btn-primary">Mas Información</a> <br />
+				       <a href="#/forecast" class="btn btn-primary">Pronóstico 10 días</a> <br />
 				       <a href="#/moon" class="btn btn-primary">Astronomía</a><br />
 				       
 					</div>
@@ -1133,13 +1133,13 @@
 				    <img src="images/analogo.svg" alt="" class="ana-img img-responsive"/>
 				    <div class="form-group">
 				       <label for="email">Usuario</label>
-				      <input type="text" name="email"
+				      <input style="font-size:30px;" type="text" name="email"
 				      class="form-control"
 				      ng-model="user.username" ng-disabled="isFormSubmited" required></input>
 				    </div>
 				    <div class="form-group">
 				      <label for="password">Contraseña</label>
-				      <input type="password" name="password"
+				      <input style="font-size:30px;" type="password" name="password"
 				      class="form-control"
 				      ng-model="user.password" ng-disabled="isFormSubmited" required></input>
 				    </div>
@@ -4817,7 +4817,7 @@ Sending Recommendation                              </h6>
                 
               
 							<div class="form-group">
-							   	<label>Telefono</label>
+							   	<label>Teléfono</label>
 							   	<input class="form-control" type="text" ng-model="userO7.phone" required/>
 							</div>
 						
@@ -4831,7 +4831,7 @@ Sending Recommendation                              </h6>
 							<div class="row">
 							    <div class="form-group col-sm-6">
 							      <input type="password" data-minlength="6" class="form-control" id="inputPassword" placeholder="Contraseña" required>
-							      <div class="help-block">Minimo 6 caracteres</div>
+							      <div class="help-block">Mínimo 6 caracteres</div>
 							    </div>
 							    <div class="form-group col-sm-6">
 							      <input type="password" class="form-control" id="inputPasswordConfirm" data-match="#inputPassword" data-match-error="Whoops, these don't match" placeholder="Confirmar Contraseña" ng-model="userO7.password" required>
@@ -4870,7 +4870,7 @@ Sending Recommendation                              </h6>
 						   			
 						   		</div>
 						    </div>
-						    <!--<button class="btn btn-primary add-unit" data-toggle="modal" data-target="#myModal2">Agregar Nueva Unidad</button>-->
+						    <!--<button class="btn btn-primary add-unit" data-toggle="modal" data-target="#myModal2" onclick="mostrar()">Agregar Nueva Unidad</button>-->
 						    
               <button class="btn btn-primary add-unit" data-toggle="modal" ng-click="AddNewUnit()">Agregar Nueva Unidad</button>
 							
@@ -5749,7 +5749,7 @@ Sending Recommendation                              </h6>
 							  <div class="modal-dialog" role="document">
 							    <div class="modal-content">
 							      <div class="modal-header">
-							        <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="CloseUnit()"><span aria-hidden="true">&times;</span></button>
+							        <button type="button" class="close" data-dismiss="modal" aria-label="Close"  ng-click="CloseUnit(); toggle = !toggle; mapInit()"><span aria-hidden="true">&times;</span></button>
 							        <h4 class="modal-title" id="myModalLabel">{{modalText}}</h4>
 							      </div>
 							      <div class="modal-body">
@@ -5848,11 +5848,16 @@ Sending Recommendation                              </h6>
 														</div>
 														<div class="col-xs-12">
 															<div class="form-group">
-																<input type="text"
+																<input
+																	list= "variedadesCafe" 
+																	type="text"
 																      class="form-control"
 																      placeholder="Variedad"
 																      ng-model="editUnit.lote[$index].variedad"	
 																      ></input>
+																      <datalist id="variedadesCafe">
+																			 <option ng-repeat="variedad in variedades" value="{{variedad.name}}">
+																		</datalist>
 															</div>
 														</div>
 														<div class="col-xs-12">

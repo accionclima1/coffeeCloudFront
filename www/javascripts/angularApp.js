@@ -899,7 +899,7 @@ app.directive('manageUnit', function () {
     directive.restrict = 'E';
     //template replaces the complete element with its text. 
     //directive.template = "Student: <b>saddfffgsdgf</b> , Roll No: <b>dfgdfgdfgfdgdf</b>";
-    directive.templateUrl = "views/shared/manage-unit.html";
+    directive.templateUrl = "Views/shared/manage-unit.html";
     //scope is used to distinguish each student element based on criteria.
     directive.scope = {
         editunitid: "="
@@ -1218,7 +1218,8 @@ app.factory('unit', ['$http', 'auth', '$window', function ($http, auth, $window)
     /* for sync data */
     //sync local PouchDb Data to server
     o.SyncUserLocalPouchDbToServer = function (dataList, id) {
-        return $http.post('http://coffeecloud.centroclima.org/SyncUserLocalData/' + id + '/datalist', dataList, {
+        var serviceURL = global.setting.getServiceUrl() + "SyncUserLocalData/";
+        return $http.post(serviceURL + id + '/datalist', dataList, {
             headers: { Authorization: 'Bearer ' + auth.getToken() }
         }).success(function (data) {
             return data;

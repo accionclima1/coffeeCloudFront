@@ -585,11 +585,19 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
         $scope.$broadcast('CLOSEUNIT', { unitId: -1 });
     }
 
+    $scope.someSelected = function (object) {
+
+          return Object.keys(object).some(function (key) {
+            return object[key];
+          });
+        }
+
     $scope.AddNewUnit = function () {
         $scope.unitopmessage = null
         $scope.modalText = "Nueva Unidad";
         $scope.$broadcast('MANAGEUNIT', { unitId: -1 });
         $("#myModal2").modal('show');
+        $("#formulariocompleto").css("display", "block");
     }
 
     $scope.EditOldUnit = function (unit) {
@@ -604,7 +612,9 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
         if ($rootScope.IsInternetOnline) {
             PouchDB.SynServerDataAndLocalData().then(function () {
                 console.log("sync successfully.");
-                $scope.unitopmessage = "Unit added successfully";
+                $scope.unitopmessage = "Unidad agregada exitosamente!";
+               
+
             }).catch(function (err) {
                 console.log("Not able to sync" + error);
                 //$scope.ResetNewUnit();

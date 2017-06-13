@@ -1,4 +1,4 @@
-﻿<!--<form name="newunitForm" novalidate class="form" role="form" ng-submit="onFormSubmit()" id="newunitForm" data-toggle="validator">-->
+<!--<form name="newunitForm" novalidate class="form" role="form" ng-submit="onFormSubmit()" id="newunitForm" data-toggle="validator">-->
 <form name="newunitForm" novalidate class="form" role="form" ng-submit="onFormSubmit()" id="newunitForm" data-toggle="validator">
     <div class="row">
 
@@ -27,7 +27,7 @@
         </div>
         <div class="col-xs-12">
             <div class="form-group">
-                <label for="departamentos">Departamento / Municipio: </label>
+                <label for="departamentos">Provincia / Cantón: </label>
             </div>
         </div>
         <div class="col-xs-12">
@@ -45,7 +45,7 @@
                 <input type="text"
                        class="form-control"
                        placeholder="Geo Referencia"
-                       ng-model="newUnit.ubicacion" id="latlongid" data-error="Campo requerido" required>
+                       ng-model="newUnit.ubicacion" id="latlongid">
                 <div class="help-block with-errors"></div></input>
                 <span class="input-group-btn">
                     <button class="btn btn-default" type="button" ng-click="toggle = !toggle; mapInit()">
@@ -81,7 +81,13 @@
                 (Hectareas)
             </div>
         </div>
-        
+        <div class="col-xs-6">
+            <div class="form-group">
+                <select ng-model="oficinaregionalmodel" ng-options="oficinaregional.name for oficinaregional in oficinaregionallst " id="oficinaregional" class="form-control" data-error="Oficina regional" required></select>
+
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
         <!--<div class="col-xs-6">
                 <div class="form-group">
                     <input type="text"
@@ -93,19 +99,36 @@
             </div> -->
         <div class="col-xs-12">
             <div class="form-group">
-                <div class="row">
+                <div class="row" ng-show="variedades">
                     <label class="col-xs-12">Variedad</label>
                     <div class="col-xs-6" ng-repeat="variedad in variedades">
-                        <label ng-hide="variedad.name == 'cual?'">
+                        <!--<label ng-hide="variedad.name == 'cual?'">
                             <input type="checkbox" ng-model="newUnit.variedad[variedad.name]"> {{variedad.name}}
                         </label>
 
                         <input type="text"
                                class="form-control"
                                placeholder="¿cual?"
-                               ng-model="newUnit.variedad['cual?']" ng-show="newUnit.variedad['otro'] && variedad.name == 'cual?'"></input>
+                               ng-model="newUnit.variedad['cual?']" ng-show="newUnit.variedad['otro'] && variedad.name == 'cual?'"></input>-->
+
+                        
+                      
+
+                        <label ng-hide="variedad.name == 'cual?'">
+                            
+                           
 
 
+                            <input type="checkbox" ng-model="variedad.isSelected"> {{variedad.name}}
+                        </label>
+
+                        <input type="text" 
+                               class="form-control"
+                               placeholder="¿cual?"
+                               ng-model="variedad.VAL" ng-show="variedad.isSelected && variedad.ISUDF"></input>
+
+
+                         
                     </div>
 
                 </div>
@@ -327,38 +350,6 @@
                        class="form-control date-field"
                        placeholder="Floracion principal"
                        ng-model="newUnit.floracionPrincipal"></input>
-            </div>
-        </div>
-        <div class="col-xs-12">
-            <div class="form-group">
-                <input type="text"
-                       class="form-control date-field"
-                       placeholder="Inicio de la cosecha"
-                       ng-model="newUnit.inicioCosecha"></input>
-            </div>
-        </div>
-        <div class="col-xs-12">
-            <div class="form-group">
-                <input type="text"
-                       class="form-control date-field"
-                       placeholder="Final de la cosecha"
-                       ng-model="newUnit.finalCosecha"></input>
-            </div>
-        </div>
-        <div class="col-xs-12">
-            <div class="form-group">
-                <input type="text"
-                       class="form-control date-field"
-                       placeholder="Inicio epoca lluviosa"
-                       ng-model="newUnit.epocalluviosa"></input>
-            </div>
-        </div>
-        <div class="col-xs-12">
-            <div class="form-group">
-                <input type="text"
-                       class="form-control date-field"
-                       placeholder="Fin epoca lluviosa"
-                       ng-model="newUnit.FinEpocalluviosa"></input>
             </div>
         </div>
     </div>
@@ -852,17 +843,17 @@
 
 
     <!-- new questions ends -->
-    <input type="submit" class="btn btn-primary" submit="newunitForm" form="newunitForm" value="Guardar nueva" ng-show="Mode == 'ADD'" />
-
+    <input type="submit" class="btn btn-primary" submit="newunitForm" form="newunitForm" value="Guardar nueva" ng-show="Mode == 'ADD' && !isRecommendationFieldRequired" />
 
     <input type="submit" class="btn btn-primary" style="width: auto; line-height: 1.42857143; float: left;" submit="newunitForm" form="newunitForm"
-            value="Salvar Cambios" ng-show="Mode == 'EDIT'"/>
+            value="Salvar Cambios" ng-show="Mode == 'EDIT' && !isRecommendationFieldRequired"/>
     <!--ng-disabled="updateunitForm.$invalid" ng-click="updateUnitForm($event,editUnit._id)">-->
         
     <!--</input>-->
-    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="CancleForm()" ng-show="Mode == 'EDIT'">Cerrar</button>
-
-    
+    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="CancleForm()" ng-show="Mode == 'EDIT' && !isRecommendationFieldRequired">Cerrar</button>
+    <button type="button" class="btn btn-default" data-dismiss="modal" ng-show="isRecommendationFieldRequired">Close</button>
+    <!--<button type="button" class="btn btn-default" ng-show="isRecommendationFieldRequired" >Sent recommendation</button>-->
+    <input type="submit" class="btn btn-primary" submit="newunitForm" form="newunitForm" ng-show="isRecommendationFieldRequired" value="Sent Recommendation">
 
 
 </form>
