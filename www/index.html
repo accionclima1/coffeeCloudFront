@@ -1133,13 +1133,13 @@
 				    <img src="images/analogo.svg" alt="" class="ana-img img-responsive"/>
 				    <div class="form-group">
 				       <label for="email">Usuario</label>
-				      <input style="font-size:30px;" type="text" name="email"
+				      <input style="font-size:30px;height:auto;" type="text" name="email"
 				      class="form-control"
 				      ng-model="user.username" ng-disabled="isFormSubmited" required></input>
 				    </div>
 				    <div class="form-group">
 				      <label for="password">Contraseña</label>
-				      <input style="font-size:30px;" type="password" name="password"
+				      <input style="font-size:30px;height:auto;" type="password" name="password"
 				      class="form-control"
 				      ng-model="user.password" ng-disabled="isFormSubmited" required></input>
 				    </div>
@@ -4870,7 +4870,7 @@ Sending Recommendation                              </h6>
 						   			
 						   		</div>
 						    </div>
-						    <!--<button class="btn btn-primary add-unit" data-toggle="modal" data-target="#myModal2" onclick="mostrar()">Agregar Nueva Unidad</button>-->
+						    <!--<button class="btn btn-primary add-unit" data-toggle="modal" data-target="#myModal2" onclick="mostrar()">Agregar Nueva Unidad 3</button>-->
 						    
               <button class="btn btn-primary add-unit" data-toggle="modal" ng-click="AddNewUnit()">Agregar Nueva Unidad</button>
 							
@@ -4957,6 +4957,7 @@ Sending Recommendation                              </h6>
 												<div class="clearfix"></div>
 												<div class="col-xs-12">
 													<div class="collapse map" >
+
 														<i class="fa fa-spinner fa-spin"></i>
 														<div id="map-canvas1" style="height:200px;width:100%;" ></div>
 													</div>
@@ -5764,6 +5765,8 @@ Sending Recommendation                              </h6>
 							</div>
 							
 							<div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+						
+
 							  <div class="modal-dialog" role="document">
 							    <div class="modal-content">
 							      <div class="modal-header">
@@ -5771,10 +5774,32 @@ Sending Recommendation                              </h6>
 							        <h4 class="modal-title" id="myModalLabel">Editar Lotes: {{ editUnit.nombre }}</h4>
 							      </div>
 							      <div class="modal-body">
+                                  <div align="right">
+<button type="button" class="btn btn-default" ng-click="prependItem()" style="margin-bottom:20px"><span class="glyphicon glyphicon-plus"></span>Agregar nuevo lote</button> 
+</div>
+
 								    <form name="updateunitFormlote" ng-submit="updateUnitForm($event,editUnit._id)" id="updateunitFormlote" >  
+								    
+
 								      
 								      <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
+
+
 									  <div class="panel panel-default" ng-repeat="lote in editUnit.lote">
+
+<div class="col-xs-12">
+										<div class="{{'collapse map'+$index}}" >
+											<div align="left" style="margin-bottom:10px;"><a ng-click="toggle=!toggle;mapInit($index);" style="color:#00abff"><- Regresar a formulario</a></div> 
+											<i class="fa fa-spinner fa-spin"></i>
+											<div class="jejeje" id="{{'map-canvas-lote'+$index}}" 
+											style="height:400px;width:100%;" ></div>
+										</div>
+									</div>									   
+
+								      <div class="clearfix"></div>
+									
+									<div class="clearfix"></div>
+
 										    <div class="panel-heading" role="tab" id="{{ 'heading-' + $index }}">
 										      <h4 class="panel-title">
 										        <a role="button" data-toggle="collapse" data-parent="#accordion" data-target="{{ '#collapse-' + $index }}" aria-expanded="false" aria-controls="{{ 'collapse-' + $index }}">
@@ -5783,7 +5808,7 @@ Sending Recommendation                              </h6>
 										      </h4>
 										    </div>
 										    <div id="{{ 'collapse-' + $index }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="{{ 'collapse-' + $index }}">
-										      <div class="panel-body">
+										      <div  class="{{'panel-body cuerpoMapa'+$index}}">
 										        	 <div class="row">
 													    <div class="col-xs-12">
 															<div class="form-group">
@@ -5808,17 +5833,7 @@ Sending Recommendation                              </h6>
 														        </button>
 														      </span>
 													</div>
-												</div>
-												
-												<div class="clearfix"></div>
-												<div class="col-xs-12">
-													<div class="collapse map" >
-														<i class="fa fa-spinner fa-spin"></i>
-														<div id="{{ 'map-canvas' + $index }}" style="height:200px;width:100%;" ></div>
-													</div>
-												</div>
-												<div class="clearfix"></div>
-														
+												</div>										
 														<div class="col-xs-12">
 															<div class="form-group">
 																<input type="text"
@@ -5903,11 +5918,15 @@ Sending Recommendation                              </h6>
 							      
 								      </form>
 										  
-										  <button type="button" class="btn btn-default" ng-click="prependItem()">Agregar nuevo lote</button>
+										  
 							      </div>
 							      <div class="modal-footer">
-							        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                                  <div class="col-md-6 col-sm-6 col-xs-6">
+							        <button type="button" class="btn btn-default" data-dismiss="modal" style="width:100%;padding: 8px 18px;line-height: 30px;" ng-click="confirmarcierre($event);">Cerrar</button>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-xs-6">
 							        <button type="button" class="btn btn-primary" form="updateunitFormlote" ng-click="updateUnitForm($event,editUnit._id)">Salvar Cambios</button>
+                                    </div>
 							        <div ng-show="sucMsg" class="bg-success row">
 									    <span>{{ sucMsg }}</span>
 									  </div>

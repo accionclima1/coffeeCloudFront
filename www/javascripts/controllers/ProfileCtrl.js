@@ -365,7 +365,11 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
         var ax = [];
         var infoWindow = new google.maps.InfoWindow({ map: map });
         console.log('function loaded root');
-        if (!document.getElementById('latlongid').value) {
+        id = 'latlongid';
+        if(!isNaN(index)){
+            id = id + index;
+        }
+        if (!document.getElementById(id).value) {
 	        console.log('function loaded 1');
 	        
             if (navigator.geolocation) {
@@ -431,8 +435,8 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
 	                   
 	                   
 	                   
-	                   var indString = index.toString();
-	                   var map2 = new google.maps.Map(document.getElementById("map-canvas" + indString), myOptions);
+	                   var indString = index.toString();  
+	                   var map2 = new google.maps.Map(document.getElementById("map-canvas-lote"+indString), myOptions);
 	                   
 	                   var marker2 = new google.maps.Marker({
 	                        draggable: true,
@@ -454,21 +458,23 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
                    
                     
                     google.maps.event.addDomListener(window, 'load', initialize);
-
+                    console.log("this is positon", myLat);
+                    console.log($scope.toggle);
                 }, function () {
-                    handleLocationError(true, infoWindow, map.getCenter());
+                    //handleLocationError(true, infoWindow, map.getCenter());
+                    alert('No es posible obtener la ubicación');
                 });
-                console.log("this is positon", myLat);
             } else {
                 // Browser doesn't support Geolocation
-                handleLocationError(false, infoWindow, map.getCenter());0
+                //handleLocationError(false, infoWindow, map.getCenter());0
+                alert('El dispositivo no soporta geolocalización');
             }
             //myLatlng = new google.maps.LatLng(42.94033923363181 , -10.37109375); 
 
         }
         else {
 	        console.log('function loaded 2');
-            x = document.getElementById('latlongid').value;
+            x = document.getElementById(id).value;
             x = x.replace(/[{()}]/g, '');
             ax = x.split(",");
             myLatlng = new google.maps.LatLng(ax[0], ax[1]);
@@ -519,7 +525,7 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
             if (!isNaN(index)) {
 	          
 	            var indString = index.toString();
-	            var map2 = new google.maps.Map(document.getElementById("map-canvas" + indString), myOptions);
+	            var map2 = new google.maps.Map(document.getElementById("map-canvas-lote"+indString), myOptions);
 	            var marker2 = new google.maps.Marker({
 	                draggable: true,
 	                position: myLatlng,
@@ -549,6 +555,13 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
 
 
     }
+    
+    $scope.confirmarcierre = function($event){
+        var a = confirm("¿Desea cerrar?")
+        if(!a){
+            $event.stopPropagation();
+        }
+    }
 
     function placeMarker(location) {
         var marker = new google.maps.Marker({
@@ -564,15 +577,29 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
 	
     // Initialize map
     $scope.mapInit = function (index) {
-        $('.map').collapse('toggle');
+        console.log("el index:");
+        console.log(index);
+        nomclass='.map';
+        nomclasscuerpo='.cuerpoMapa';
+        if(!isNaN(index)){
+            nomclass = nomclass + index;
+            nomclasscuerpo = nomclasscuerpo + index;
+        }
+        $(nomclass).collapse('toggle');
+        if ($(nomclass).attr("aria-expanded") === 'true'){
+            $(nomclasscuerpo).css("display", "none");
+        }else{
+            $(nomclasscuerpo).css("display", "block");
+        }
         
         if ($rootScope.IsInternetOnline) {
             initialize(index);
-            console.log('map online');
+            console.log('map online, index:'+index);
+
             $('#myModal, #myModal2').on('hidden.bs.modal', function (e) {
-			  $scope.toggle = false;
-			  $('.map').collapse('hide');
-			 })
+			  $scope.toggle = false;           
+			  $(nomclass).collapse('hide');
+			 });
             
         } else {
 	        $('#map-canvas > div, #map-canvas > div').remove();

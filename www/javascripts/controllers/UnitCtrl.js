@@ -560,6 +560,7 @@ function ($rootScope, $scope, $state, unit, auth, varieties, localStorageService
     };
 
     muni14.addDepts('departamentos');
+    
 
     function wait(ms) {
         var start = new Date().getTime();
@@ -723,4 +724,5 @@ function ($rootScope, $scope, $state, unit, auth, varieties, localStorageService
     }
   $('#newunitForm').validator();
   $('#newunitForm').validator('update');
+  
 }]);

@@ -105,6 +105,7 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
+
                     var pos = {
                         lat: position.coords.latitude,
                         lng: position.coords.longitude
@@ -113,6 +114,7 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
                     myLat = position.coords.latitude;
                     myLng = position.coords.longitude;
                     // map.setCenter(pos);
+
                     myLatlng = new google.maps.LatLng(myLat, myLng);
 
                     var myOptions = {
@@ -120,9 +122,9 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
                         center: myLatlng,
                         mapTypeId: google.maps.MapTypeId.ROADMAP
                     }
-                    map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
 
-                    map1 = new google.maps.Map(document.getElementById("map-canvas1"), myOptions);
+                    map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
+                    //map1 = new google.maps.Map(document.getElementById("map-canvas1"), myOptions);
 
 
 
@@ -133,12 +135,13 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
                         title: "Your location"
                     });
 
-                    var marker1 = new google.maps.Marker({
+
+                    /*var marker1 = new google.maps.Marker({
                         draggable: true,
                         position: myLatlng,
                         map: map1,
                         title: "Your location"
-                    });
+                    });*/
 
 
 
@@ -151,14 +154,14 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
 
                     });
 
-                    google.maps.event.addListener(marker1, 'dragend', function (event) {
+                    /*google.maps.event.addListener(marker1, 'dragend', function (event) {
 
                         placeMarker(event.latLng);
                         $scope.editUnit.ubicacion = '(' + event.latLng.lat() + ' , ' + event.latLng.lng() + ')';
                         document.getElementById('latlongid1').value = event.latLng.lat() + ',' + event.latLng.lng();
                         console.log("this is marker info", event.latLng.lat() + ' , ' + event.latLng.lng());
 
-                    });
+                    });*/
 
 
 
@@ -191,12 +194,12 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
                     google.maps.event.addDomListener(window, 'load', initialize);
 
                 }, function () {
-                    handleLocationError(true, infoWindow, map.getCenter());
+                    //handleLocationError(true, infoWindow, map.getCenter());
+                    alert('El dispositivo no soporta geolocalización');
                 });
-                console.log("this is positon", myLat);
             } else {
                 // Browser doesn't support Geolocation
-                handleLocationError(false, infoWindow, map.getCenter()); 0
+                //handleLocationError(false, infoWindow, map.getCenter()); 0
                 alert('El dispositivo no soporta geolocalización');
             }
             //myLatlng = new google.maps.LatLng(42.94033923363181 , -10.37109375); 
@@ -877,6 +880,7 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
             $('#newunitForm').validator();
             $scope.Mode = "ADD";            
             $scope.initializeNewUnit();
+            
         } else {
             //$scope.newunitForm.$setPristine();
             //$scope.newunitForm.$setUntouched()
