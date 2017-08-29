@@ -1,9 +1,11 @@
-app.controller('UnitManagerCtrl', ['$http', '$scope', 'auth', 'unit', 'varieties', 'user', 'PouchDB', '$rootScope', 'onlineStatus','mailer',
-function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlineStatus, mailer) {
+app.controller('UnitManagerCtrl', ['$http', '$scope', 'auth', 'unit', 'varieties', 'user', 'PouchDB', 'localStorageService', '$rootScope', 'onlineStatus','mailer',
+function ($http, $scope, auth, unit, varieties, user, PouchDB, localStorageService, $rootScope, onlineStatus, mailer) {
 
     console.log("Loading UnitManagerCtrl")
 
     var map;
+    //*Ea0707*/
+    //$rootScope.IsInternetOnline = false;
     $scope.isLoggedIn = auth.isLoggedIn;
     $scope.currentUser = auth.currentUser;
     $scope.userId = auth.userId;
@@ -36,6 +38,14 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
         labelMonthPrev: '&#x3C;Ant',
         labelMonthSelect: 'Seleccione un mes',
         labelYearSelect: 'Seleccione un año',
+          onOpen: function() {
+            $('.picker').css("z-index", 10000);
+            console.log('Opened up');
+          },
+          onClose: function() {
+            $('.picker').css("z-index", -1);
+            console.log('Closed now');
+          },
     }
    
     $scope.MonthDropDownOptions = [
@@ -57,17 +67,44 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
 
     if ($rootScope.IsInternetOnline) {
         console.log("app online");
+        
         varieties.getAll().then(function (varids) {
             variedades = varids.data;
-            variedades.push({ name: "otro" }, { name: "cual?" });
+            //variedades.push({ name: "otro" }, { name: "cual?" });
             $scope.variedades = variedades;
+
+            //Guardamos con localStorage
+            localStorageService.set('localVarieties',variedades);  
+
+            //Guardamos a nivel local   
+            PouchDB.SaveVarietiesToPouchDB(variedades);  
+            console.log("Data --->");
+            console.log($scope.variedades);
+
+ 
+ //            $("#txtPrueba").val("Data cargado!");    
+
         });
+
+        //$("#txtPrueba").val("data online  " + $scope.variedades);
+
     }
     else {
-        console.log("app offline");
+        console.log("app offline **");
+        console.log(onlineStatus);
+        //$("#txtPrueba").val("offline " + onlineStatus.onLine);
+        console.log(PouchDB);
+        //$scope.variedades = localStorageService.get('localVarieties');
+
         PouchDB.GetVarietiesFromPouchDB().then(function (result) {
+            console.log("Respuesta: ");
+            console.log(result);
+            console.log("entramos a PouchDB");
             if (result.status == 'fail') {
+
                 $scope.error = result.message;
+                //$("#txtPrueba").val("error get Var");
+
             }
             else if (result.status == 'success') {
                 var doc = result.data.rows[0].doc;
@@ -76,10 +113,18 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
                     for (var i = 0; i < doc.list.length; i++) {
                         variedadesArray.push(doc.list[i]);
                     }
-                    variedadesArray.push({ name: "otro" }, { name: "cual?" });
+                    //variedadesArray.push({ name: "otro" }, { name: "cual?" });
                     $scope.variedades = variedadesArray;
+                    //$("#txtPrueba").val("GetVariedads "  + onlineStatus.onLine);
+                    console.log("Data-- ");
+                    console.log($scope.variedades);
+
                 }
             }
+        }).catch(function(err) {
+            console.log("error al obtener datos");
+            console.log(err);
+           // $("#txtPrueba").val("error en data");
         });
     }
 
@@ -636,6 +681,24 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
         else
             console.log("Close button clicked");
     }
+
+    $scope.addVariedad = function(){        
+        $("#lblAdd").hide();  
+        $("#contenedorNueva").show();      
+    }
+
+    $scope.addNewvariedad = function(){
+        var nombreVariedad = $("#nuevaVariedad").val();
+        $("#nuevaVariedad").val("");        
+        $scope.variedades.push({ name:  nombreVariedad });
+
+        console.log("************************************************");
+        console.log($scope.variedades);
+        
+        $("#contenedorNueva").hide();
+        $("#lblAdd").show();
+    }
+
 
     $scope.CancleForm = function () {
         $('#myModal2').modal('hide');

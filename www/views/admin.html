@@ -33,7 +33,18 @@
 	<script type="text/javascript" src="bower_components/tinymce-dist/tinymce.js"></script>
 	 <script type="text/javascript" src="bower_components/angular-ui-tinymce/src/tinymce.js"></script>
     <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css"
+  integrity="sha512-wcw6ts8Anuw10Mzh9Ytw4pylW8+NAD4ch3lqm9lzAsTxg0GFeJgoAtxuCLREZSC5lUXdVyo/7yfsqFjQ4S+aKw=="
+  crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.1.0/dist/leaflet.js"
+  integrity="sha512-mNqn2Wg7tSToJhvHcqfzLMU6J4mkOImSPTxVZAdo+lcPlk+GhZmYgACEe0x35K7YzW1zJ7XyJV/TT1MrdXvMcA=="
+  crossorigin=""></script>
 	
+    <script src="/javascripts/jquery-ui.js"></script>
+    <script src="/javascripts/picker.js"></script>
+    <script src="/javascripts/picker.date.js"></script>
+
 
 	<script src="/javascripts/adminApp.js"></script>
 	<script src="/javascripts/admincontrollers/AdaptacionCtrl.js"></script>
@@ -46,7 +57,9 @@
     <script src="/javascripts/admincontrollers/RoyaCtrl.js"></script>
     <script src="/javascripts/admincontrollers/TechRecCtrl.js"></script>
     <script src="/javascripts/admincontrollers/UsersCtrl.js"></script>
-    <script src="/javascripts/admincontrollers/VarietyCtrl.js"></script>
+    <script src="/javascripts/admincontrollers/VarietyCtrl.js"></script>    
+    <script src="javascripts/admincontrollers/VulnerabilidadCtrl.js"></script>
+    
 	
 
 
@@ -191,6 +204,11 @@
                     <li ng-class="{ active: isActive('/adaptacion') }">
                         <a href="/admin#/adaptacion"><i class="fa fa-fw fa-shield"></i> Adaptación Climática (Roya)</a>
                     </li>
+
+                    <li ng-class="{ active: isActive('/vulnerabilidad') }">
+                        <a href="/admin#/vulnerabilidad"><i class="fa fa-fw fa-shield"></i> Reportes Vulnerabilidad</a>
+                    </li>
+
                     <li ng-class="{ active: isActive('/adaptacionGallo') }">
                         <a href="/admin#/adaptacionGallo"><i class="fa fa-fw fa-shield"></i> Adaptación Climática(Ojo de Gallo) </a>
                     </li>
@@ -326,6 +344,27 @@
                                 <div ng-bind-html="x.content | unsafe"></div>
                             </div>
                         </div>
+                        <div>
+                        	<h1>Mapa</h1>
+                        	<div class="col-xs-12">
+					            <div class="form-group">
+					                <input type="text"
+					                       class="form-control date-field"
+					                       placeholder="Inicio"></input>					                
+					            </div>
+
+					             <div class="form-group">
+					                <input type="text"
+					                       class="form-control date-field"
+					                       placeholder="Fin"></input>					                
+					            </div>
+					        </div>
+					        <div data-ng-init="initMapaincidencia()">
+					        	<div id="incidenciasMapa"></div>
+					        </div>
+
+                        </div>
+
                     </div>
 	                <div class="col-md-4">
 	                    <div class="panel panel-default">
@@ -1307,7 +1346,8 @@
 						<br/>
 						<br/>
 						<p class="lead col-md-4">resultados: </p>
-							<div class="col-md-8 text-right">  
+							<div class="col-md-8 text-right">
+								<button ng-click="mostrarMapa()" >{{lblBtnMapa}}</button>
 								<button ng-click="exportData()" >Exportar</button>
 							</div>
                 <!-- /.row -->
@@ -1333,6 +1373,10 @@
                 <div class="row">
                     <div class="col-md-12">
 	                   <div class="roya-editor">
+                       <div id="mapaDatosRoya" style="display:none">
+                            <div id="mapid" style="height:350px"></div>
+                            </div>
+                            <div id="tablaDatosRoya">
 		                   <table class="table table-striped">
 							    <thead>
 							        <tr>
@@ -1356,6 +1400,7 @@
 							<div class="text-center">
 								<pagination page="currentPage" max-size="noOfPages" previous-text="<" next-text=">" first-text="<<" last-text=">>" boundary-link-numbers="true" total-items="totalItems" items-per-page="pageSize"></pagination>
 							</div>
+                            </div>
 							<!-- Modal -->
 								<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 								  <div class="modal-dialog" role="document">
@@ -1511,6 +1556,112 @@
         </div>
     </script>
        
+
+    <script type="text/ng-template" id="/vulnerabilidad.html">
+	<div class="container-fluid vulnerabilidad-wrap">
+
+		<!-- Page Heading -->
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">
+					Reportes de Vulnerabilidad
+				</h1>
+
+				<div class="col-lg-12">
+
+					<div class=" form-inline">
+						<label>Fecha:</label>
+						<input type="text" class="form-control date-field" placeholder="Fecha" ng-model="search.dateFrom"></input>
+					</div>
+				</div>                
+				<br/>
+				<br/>
+				<p class="lead col-md-4">resultados: </p>
+				<div class="col-md-8 text-right">
+
+					<button ng-click="exportData()" >Exportar</button>
+				</div>
+				<!-- /.row -->
+				<table class="table table-striped" style="display:none;" id='exportable'>
+					<thead>
+						<tr>
+							<th>{{head.departamento}}</th>
+							<th>{{head.comunidad}}</th>	
+							<th>{{head.productor}}</th>	
+							<th>{{head.carneAnacafe}}</th>	
+							<th>{{head.variedades}}</th>									
+							<th>{{head.calificacion}}</th>	
+							<th>{{head.createdAt}}</th>	
+							<th>{{head.user}}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="row in testsList | orderBy : sort.column : sort.descending | myfilter:search">													
+							<td ng-click="loadTest(row);">{{row.departamento}}</td>
+							<td ng-click="loadTest(row);">{{row.comunidad}}</td> 						
+							<td ng-click="loadTest(row);">{{row.productor}}</td>
+							<td ng-click="loadTest(row);">{{row.carneAnacafe}}</td>		 				
+							<td ng-click="loadTest(row);">{{row.variedades}}</td>
+							<td ng-click="loadTest(row);">{{row.calificacion}}</td>							
+							<td ng-click="loadTest(row);">{{row.createdAt}}</td>
+							<td ng-click="loadTest(row);">{{row.user}}</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="row">
+					<div class="col-md-12">
+						<div class="encuesta-editor">
+							<div id="tablaDatosEncuesta">
+								<table class="table table-striped">
+									<thead>									
+
+										<tr>
+											<th ng-class="selectedCls(i)" ng-click="changeSorting(i)">{{head.departamento}}</th>
+											<th ng-class="selectedCls(i)" ng-click="changeSorting(i)">{{head.comunidad}}</th>	
+											<th ng-class="selectedCls(i)" ng-click="changeSorting(i)">{{head.productor}}</th>	
+											<th ng-class="selectedCls(i)" ng-click="changeSorting(i)">{{head.carneAnacafe}}</th>	
+											<th ng-class="selectedCls(i)" ng-click="changeSorting(i)">{{head.variedades}}</th>									
+											<th ng-class="selectedCls(i)" ng-click="changeSorting(i)">{{head.calificacion}}</th>	
+											<th ng-class="selectedCls(i)" ng-click="changeSorting(i)">{{head.createdAt}}</th>	
+											<th ng-class="selectedCls(i)" ng-click="changeSorting(i)">{{head.user}}</th>
+										</tr>
+
+									</thead>
+									<tbody>
+										<tr ng-repeat="row in testsList | orderBy : sort.column : sort.descending | myfilter:search | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
+											
+											<td ng-click="loadTest(row);">{{row.departamento}}</td>
+											<td ng-click="loadTest(row);">{{row.comunidad}}</td> 						
+											<td ng-click="loadTest(row);">{{row.productor}}</td>
+											<td ng-click="loadTest(row);">{{row.carneAnacafe}}</td>		 				
+											<td ng-click="loadTest(row);">{{row.variedades}}</td>
+											<td ng-click="loadTest(row);">{{row.calificacion}}</td>							
+											<td ng-click="loadTest(row);">{{row.createdAt}}</td>
+											<td ng-click="loadTest(row);">{{row.user}}</td>
+
+
+											<td> <button class="btn btn-danger" ng-click="removeTest(row._id)">X</button></td> 
+										</tr>
+
+									</tbody>
+								</table>
+								<div class="text-center">
+									<pagination page="currentPage" max-size="noOfPages" previous-text="<" next-text=">" first-text="<<" last-text=">>" boundary-link-numbers="true" total-items="totalItems" items-per-page="pageSize"></pagination>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+</script>
+   
    
 	<script type="text/ng-template" id="/campo.html">
 	     <div class="container-fluid adaptacion-wrap">

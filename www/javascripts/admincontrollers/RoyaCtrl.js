@@ -1,4 +1,4 @@
-﻿//Roya controller
+//Roya controller
 app.controller('RoyaCtrl', [
 	'$scope',
 	'auth',
@@ -7,8 +7,10 @@ app.controller('RoyaCtrl', [
     '$window',
     'user', 'Excel', '$timeout',
 	function ($scope, auth, $location, roya, $window, user, Excel, $timeout) {
+        var mymap=null;
 	    var currentTest = null;
 	    var loadAll = function () {
+            console.log("va a cargar la roya");
 	        roya.getAll().then(function (tests) {
 	            //debugger;
 	            //var token = auth.getToken();
@@ -23,6 +25,8 @@ app.controller('RoyaCtrl', [
 	                    return item.unidad.departamento == department;
 	                });
 	            }
+                console.log("data:");
+                console.log(tests.data);
 	            $scope.testsList = tests.data;
 	            $scope.currentPage = 1;
 	            $scope.pageSize = 9;
@@ -57,7 +61,9 @@ app.controller('RoyaCtrl', [
 	            }
 
 
-	        });
+	        },function (error){
+                console.log("ijole, hubo un error");
+            });
 	    };
 
 	    loadAll();
@@ -106,6 +112,45 @@ app.controller('RoyaCtrl', [
 	            loadAll();
 	        });
 	    }
+        
+        $scope.lblBtnMapa = "Mapa";
+        
+        $scope.mostrarMapa = function(){
+            if($scope.lblBtnMapa=='Mapa'){
+                $('#tablaDatosRoya').css('display','none');
+                $('#mapaDatosRoya').css('display','block');
+                if(mymap==null){
+                    mymap = L.map('mapid').setView([14.973642, -90.450439], 7);
+                    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+                        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+                        maxZoom: 18,
+                        id: 'mapbox.streets',
+                        accessToken: 'pk.eyJ1IjoiaWFvZ3QiLCJhIjoiY2o0dGN6cjlkMDcwODJ4bGF2dDFndGdvciJ9.ACiNe407LOOTTKtT-7-lLA'
+                    }).addTo(mymap);
+                    for (var k in $scope.testsList) {
+                        if($scope.testsList[k].unidad){
+                            var ubica = $scope.testsList[k].unidad.ubicacion;
+                            console.log("ubicacion:");
+                            console.log(ubica);
+                            if(ubica){
+                                ubica = ubica.replace("(","");
+                                ubica = ubica.replace(")","");
+                                var arrDatos = ubica.split(",");
+                                if(arrDatos.length==2){
+                                    var marker = L.marker([arrDatos[0],arrDatos[1]]).addTo(mymap);
+                                }
+                            }
+                        }
+                    }
+                }
+                $scope.lblBtnMapa = 'Tabla';
+            }else{
+                $('#tablaDatosRoya').css('display','block');
+                $('#mapaDatosRoya').css('display','none');
+                $scope.lblBtnMapa = 'Mapa';
+            }
+        }
+        
 	    $scope.exportData = function () {
 	        var table = document.getElementById('exportable');
 	        var html = table.outerHTML;

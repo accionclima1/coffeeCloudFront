@@ -13,13 +13,13 @@
         var version = '1.3',
 
         // Default settings
-        settings = {
+         settings = {
             providerId: 'yhw',                          // weather provider by default ('yhw')
             providerSequence: true,                     // enable providers retries sequence
             providerSequenceIds: 'yhw|wwo|owm|ham|wug|fio', // retries sequence (if yhw fails -> wwo and so on)
             geoProviderId: 'geopl',                     // geolocation provider by default
             geoProviderSequence: true,                  // enable geo-provider retries sequence
-            geoProviderSequenceIds: 'geopl|fgip|tlz',	// retries sequence (if geopl fails -> fgip -> tlz)
+            geoProviderSequenceIds: 'geopl|fgip|tlz',   // retries sequence (if geopl fails -> fgip -> tlz)
             language: null,                             // user language
             location: 'auto',                           // location 'auto' = auto-detection
             locationId: null,
@@ -568,6 +568,7 @@
 
             if (loadData) {
                 var msg = 'Resolving location with ' + getGeoProvider().name;
+
                 showSpinner.call(this, msg);
                 var dataUrl = getGeoUrl.call(this);
 
@@ -578,6 +579,7 @@
                     timeout: xhrTimeout
                 })
 				.done(function (data) {
+                   
 					//Sanity check
 					if (!this.geoProvider().sanity_check.call(this, data)) {
 						// Try to use geolocation
@@ -586,7 +588,8 @@
 					}
 
 					data = this.geoProvider().convert_data.call(this, data);
-
+                    console.log("data loc");
+                    console.log(data);
 					if (data) {
 						this.locationObj = data;
 						var name = getStoredItemName.call(this);
@@ -639,6 +642,7 @@
         }
 
         function geoSuccess(position) {
+            console.log(position);
             this.location = position.coords.latitude + ',' + position.coords.longitude;
             if ($.isFunction(config.locate)) { config.locate.call(this, position); }
             load.call(this);
@@ -1116,6 +1120,8 @@
                             return true;
                         },
                         convert_data: function (data) {
+                            console.log(data);
+
                             var wO = $.extend({}, EW.Settings.Data.Model.Weather);
                             var channel = data.query.results.channel,
 							item = channel.item,
@@ -1434,6 +1440,8 @@
 					    },
 					    convert_data: function (data, forecastsData) {
 					        var wO = $.extend({}, EW.Settings.Data.Model.Weather);
+                            console.log("OWN");
+                            console.log(data);
 
 					        var item = data.main,
 				        	weather = data.weather,
@@ -1584,6 +1592,8 @@
 	                        return true;
 	                    },
 	                    convert_data: function (data, forecastsData) {
+
+
 	                        var wO = $.extend({}, EW.Settings.Data.Model.Weather);
 
 	                        var obs = data['current_observation'],
@@ -1960,10 +1970,54 @@
 	                        return true;
 	                    },
 	                    convert_data: function (data) { // this = EasyWeather instance
+                            console.log("aqui");
 	                        var gO = $.extend({}, EW.Settings.Data.Model.Geolocation, data);
 	                        return gO;
 	                    }
 	                },
+                    {
+                        id: 'ipapi',
+                        name: 'ip-api.com',
+                        description: 'better acurracy',
+                        key: null,
+                        data_type: 'jsonp',
+                        get_link: function () {
+                            return '<a href="http://ip-api.com" target="_blank">' + this.name + '</a>';
+                        },
+                        url: function () {
+                            return EW.Helpers.protocol() + '//ip-api.com/json/';
+                        },
+                        sanity_check: function (data) { // this = EasyWeather instance
+                            console.log("check");
+                            console.log(data);
+                            // Sanity check
+                            if (!data || !data['city']) {
+                                return false;
+                            }
+                            return true;
+                        },
+                        convert_data: function (data) { // this = EasyWeather instance
+                            console.log("data used to : ");
+                            console.log(data);
+
+
+                            var gO = $.extend({}, EW.Settings.Data.Model.Geolocation);
+                            gO.city = data.city;
+                            gO.country_name = data.country;
+                            gO.region_name = data.regionName;
+                            gO.longitude = data.lon;
+                            gO.latitude = data.lat;
+                            gO.ip = data.query;
+                            gO.metrocode = null;
+                            gO.region_code = data.region;
+                            gO.country_code = data.countryCode;
+                            gO.areacode = null;
+                            gO.zipcode = data.zip;
+                            return gO;
+                        }
+
+                    },
+
 				    {
 				        id: 'geopl',
 				        name: 'geoPlugin',
@@ -1983,6 +2037,7 @@
 				            return true;
 				        },
 				        convert_data: function (data) { // this = EasyWeather instance
+
 				            var gO = $.extend({}, EW.Settings.Data.Model.Geolocation);
 				            gO.city = data.geoplugin_city;
 				            gO.country_name = data.geoplugin_countryName;
@@ -2115,9 +2170,11 @@
 // Source: https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/JSON
 // The following algorithm is an imitation of the native JSON object:
 if (!window.JSON) {
+
   window.JSON = {
     parse: function (sJSON) { return eval("(" + sJSON + ")"); },
     stringify: function (vContent) {
+
       if (vContent instanceof Object) {
         var sOutput = "";
         if (vContent.constructor === Array) {

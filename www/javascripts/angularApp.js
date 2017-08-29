@@ -1,4 +1,3 @@
-/// <reference path="angularApp.js" />
 var app = angular.module('coffeeScript', ['btford.socket-io', 'ui.router', 'snap', 'luegg.directives', 'LocalStorageModule', 'ngSanitize', 'ngFileUpload', 'base64']);
 
 app.config(['localStorageServiceProvider', function (localStorageServiceProvider) {
@@ -10,11 +9,9 @@ app.config(function ($httpProvider) {
     $httpProvider.defaults.useXDomain = true;
 });
 
-function handleLocationError(tipobool,obj,center){
-    console.log("error en posiciòn");
-}
 
-app.factory('PouchDB', ['$http', 'unit', 'auth', '$q', '$rootScope', '$window', function ($http, unit, auth, $q, $rootScope, $window) {
+
+app.factory('PouchDB', ['$http', 'unit', 'vulnerabilidades', 'auth', '$q', '$rootScope', '$window', function ($http, unit, vulnerabilidades, auth, $q, $rootScope, $window) {
     var pouchDbFactory = {};
     var localPouchDB = undefined;
     pouchDbFactory.CreatePouchDB = function () {
@@ -55,7 +52,7 @@ app.factory('PouchDB', ['$http', 'unit', 'auth', '$q', '$rootScope', '$window', 
             }
         }
         var pouchPromise = localPouchDB.query(mapFunctionTypeUnit, { limit: 1, include_docs: true });
-        return $q.when(pouchPromise).then(function (doc) {
+        $q.when(pouchPromise).then(function (doc) {
             result.status = 'success';
             result.data = doc;
             deferred.resolve(result);
@@ -346,6 +343,7 @@ app.factory('PouchDB', ['$http', 'unit', 'auth', '$q', '$rootScope', '$window', 
                 emit([doc._id]);
             }
         }
+
         var deferred = $q.defer();
         var pouchPromise = localPouchDB.query(mapFunctionTypeUnit, { include_docs: true });
         $q.when(pouchPromise).then(function (recordList) {
@@ -376,6 +374,7 @@ app.factory('PouchDB', ['$http', 'unit', 'auth', '$q', '$rootScope', '$window', 
                     result.message = 'Error while Sync' + err.Message;
                     deferred.resolve(result);
                 });
+
             }
             else {
                 //pouchDbFactory.SetLastSyncDateTime(Number(new Date()));
@@ -395,6 +394,93 @@ app.factory('PouchDB', ['$http', 'unit', 'auth', '$q', '$rootScope', '$window', 
         });
         return deferred.promise;
     }
+
+
+
+    pouchDbFactory.SynLocalDataToServerDbEncuesta = function () {
+
+        var result = {
+            status: '',
+            data: {},
+            message: ''
+        };
+        var lastSynDateTimeSpan = 0;
+
+        lastSynDateTimeSpan = pouchDbFactory.GetLastSyncDateTime();
+
+
+        function mapFunctionTypeEncuesta(doc) {
+            if ((doc.EntityType == "Encuesta")) {
+                emit([doc._id]);
+            }
+        }
+
+        var deferred = $q.defer();
+        var pouchPromise = localPouchDB.query(mapFunctionTypeEncuesta, { include_docs: true });
+        console.log("Data-----------------------------");
+        console.log(localPouchDB);
+
+        console.log("Data to sync-----------------------------");
+        console.log(pouchPromise);
+
+        $q.when(pouchPromise).then(function (recordList) {
+            console.log("Esta es una lista de cosas a hacer...");
+            console.log(recordList);
+            if (recordList && recordList.rows && recordList.rows.length > 0) {
+                var dataList = [];
+                for (i = 0; i < recordList.rows.length; i++) {
+                    if (recordList.rows[i].doc.LastUpdatedDateTime && recordList.rows[i].doc.LastUpdatedDateTime > lastSynDateTimeSpan) {
+                        var element = recordList.rows[i].doc;
+                        var documentId = recordList.rows[i].doc._id;
+                        var documentRevKey = recordList.rows[i].doc._rev;
+                        delete element["_id"];
+                        delete element["type"];
+                        dataList.push(element);
+                      
+                    }
+                }
+
+                console.log("datalist------------------------------");
+                console.log(dataList);
+
+                vulnerabilidades.SyncUserLocalPouchDbToServerEncuesta(dataList, auth.userId()).then(function () {
+                    //pouchDbFactory.SetLastSyncDateTime(Number(new Date()));
+                    console.log("vulnerability.SyncUserLocalPouchDbToServerEncuesta success");
+                    result.status = 'success';
+                    result.data = [];
+                    result.message = 'Vulnerability Data Sync Successfully...';
+                    pouchDbFactory.SetLastSyncDateTime(Number(new Date()));
+
+                    deferred.resolve(result);
+                }).catch(function (err) {
+                    console.log("vulnerability.SyncUserLocalPouchDbToServerEncuesta catch");
+                    console.log(err);
+                    result.status = 'fail';
+                    result.data = [];
+                    result.message = 'Error while Sync' + err.Message;
+                    deferred.resolve(result);                      
+                });
+
+            }
+            else {
+                //pouchDbFactory.SetLastSyncDateTime(Number(new Date()));
+                result.status = 'success';
+                result.data = [];
+                result.message = 'No data to sync...';
+                deferred.resolve(result);
+            }
+
+        }).catch(function (err) {
+            console.log("vulnerability.SyncUserLocalPouchDbToServerEncuesta catch");
+            console.log(err);
+            result.status = 'fail';
+            result.data = [];
+            result.message = 'Error while Sync' + err.Message;
+            deferred.reject(err);
+        });
+        return deferred.promise;
+    }
+
 
     //for server to local and local to servr
     pouchDbFactory.SynServerDataAndLocalData = function () {
@@ -688,6 +774,130 @@ app.factory('PouchDB', ['$http', 'unit', 'auth', '$q', '$rootScope', '$window', 
 
     //};
 
+
+
+     pouchDbFactory.SaveUserToPouchDB = function (userData, userId) {
+        var result = {
+            status: '',
+            data: {},
+            message: ''
+        };
+        if (userData) {
+            var element = userData;
+            var pouchPromise = localPouchDB.get(userId);
+                //doc.email = element.email;
+            return $q.when(pouchPromise).then( function (doc) {
+                doc.image = element.image;
+                doc.phone = element.phone;
+                doc.salt = element.salt;
+                doc.type = element.type;
+                doc.units = element.units;
+                doc.username = element.username;
+                doc.email = element.email;
+                var UpdatePouchPromise = localPouchDB.put(doc);
+                return $q.when(UpdatePouchPromise).then(function (res) {
+                    if (res && res.ok == true) {
+                        console.log("user data updated");
+                        result.status = 'success';
+                        return result;
+                    }
+                }).catch(function (err) {
+                    console.log(err);
+                    result.status = 'fail';
+                    result.message = err;
+                    return result;
+                });
+            }).catch(function (err) {
+                if (err.status == 404) {
+                    return localPouchDB.put(element).then(function () {
+                        console.log("user data inserted");
+                        result.status = 'success';
+                        return result;
+                    }).catch(function (err) {
+                        result.status = 'fail';
+                        result.message = err;
+                        return result;
+                    });
+                }
+
+            });
+        }
+
+    }
+
+
+
+     pouchDbFactory.updateEncuesta = function (encuestaData, userId, idDoc) {
+         var result = {
+            status: '',
+            data: {},
+            message: ''
+        };
+        if (encuestaData) {
+            var element = encuestaData;
+            var pouchPromise = localPouchDB.get(idDoc);
+
+            return $q.when(pouchPromise).then( function (doc) {
+                doc.user = userId;                
+                doc.PouchDBId = element.PouchDBId;
+                doc.isDeleted = element.isDeleted;
+                doc.EntityType = element.EntityType;
+                doc.preguntas = element.preguntas;
+                var dt = new Date();
+                doc.LastUpdatedDateTime = Number(dt);
+                var UpdatePouchPromise = localPouchDB.put(doc);
+                return $q.when(UpdatePouchPromise).then(function (res) {
+                    if (res && res.ok == true) {
+                        console.log("Encuesta actualizado...");
+                        result.data = element;
+                        result.status = 'success';
+                        return result;
+                    }
+                }).catch(function (err) {
+                    console.log(err);
+                    result.status = 'fail';
+                    result.message = err;
+                    return result;
+                });
+            }).catch(function (err) {
+                console.log("Error al obtener elemento...");
+
+            });
+        }
+    };
+
+    pouchDbFactory.AddEncuesta = function (newEncuesta, userId) {
+        var result = {
+            status: '',
+            data: {},
+            message: ''
+        };
+        var dt = new Date();
+        var documentId = dt.getFullYear().toString() + dt.getMonth().toString() + dt.getDate().toString() + dt.getHours().toString() + dt.getMinutes().toString() + dt.getSeconds().toString() + dt.getMilliseconds().toString();
+        newEncuesta._id = documentId;
+        newEncuesta.user = userId;
+        newEncuesta.PouchDBId = documentId;
+        newEncuesta.LastUpdatedDateTime = Number(dt);
+        var pouchPromise = localPouchDB.put(newEncuesta);
+        return $q.when(pouchPromise).then(function (data) {
+            if (data && data.ok == true) {
+                result.status = 'success';
+                result.data = newEncuesta;
+                return result;
+            }
+            else {
+                result.status = 'fail';
+                result.message = data;
+                return result
+            }
+        }).catch(function (err) {
+            result.status = 'fail';
+            result.message = err;
+            return result
+        });
+    };
+    
+
     pouchDbFactory.AddUnit = function (newUnit, userId) {
         var result = {
             status: '',
@@ -718,6 +928,9 @@ app.factory('PouchDB', ['$http', 'unit', 'auth', '$q', '$rootScope', '$window', 
             return result
         });
     };
+
+     
+
     pouchDbFactory.EditUnit = function (editUnit, userId) {
         var result = {
             status: '',
@@ -848,6 +1061,18 @@ app.factory('onlineStatus', ["$window", "$rootScope", function ($window, $rootSc
     var onlineStatus = {};
 
     onlineStatus.onLine = $window.navigator.onLine;
+    onlineStatus.onLine = false;
+
+    Offline.check();
+       if (Offline.state === "up"){
+            onlineStatus.onLine = true;
+            console.log("Conectado a internet");
+
+       }else{
+            onlineStatus.onLine = false;
+            console.log("No conectado a internet");
+       }
+
 
     onlineStatus.isOnline = function () {
         return onlineStatus.onLine;
@@ -935,7 +1160,7 @@ app.directive('manageUnit', function () {
 app.factory('widget', ['$http', function ($http) {
     var w = {};
     w.getAll = function () {
-	    
+        
         return $http.get('http://coffeecloud.centroclima.org/getWidgets').success(function (data) {
             return data;
         });
@@ -1111,7 +1336,8 @@ app.factory('auth', ['$http', '$state', '$window', function ($http, $state, $win
         if (auth.isLoggedIn()) {
             var token = auth.getToken();
             var payload = JSON.parse($window.atob(token.split('.')[1]));
-
+            /*ea0707*/            
+            //return "5972883cd33b92bd04007443";
             return payload._id;
         }
     };
@@ -1265,6 +1491,27 @@ app.factory('varieties', ['$http', 'auth', '$window', function ($http, auth, $wi
     return o;
 }]);
 
+
+app.factory('vulnerability', ['$http', 'auth', '$window', function ($http, auth, $window) {
+    var o = {};
+    o.getAll = function () {    
+        return $http.get('http://coffeecloud.centroclima.org/varieties').success(function (data) {
+            return data;
+        });
+    };
+    o.create = function (varieties) {
+        //localhost unit
+        return $http.post('http://coffeecloud.centroclima.org/varieties', varieties, {
+            headers: { Authorization: 'Bearer ' + auth.getToken() }
+        }).success(function (data) {
+            return data;
+        });
+    };
+
+    return o;
+}]);
+
+
 app.factory('methods', ['$http', 'auth', function ($http, auth) {
     var o = {
         chats: []
@@ -1415,8 +1662,8 @@ app.factory('gallo', ['$http', 'auth', function ($http, auth) {
 
 //pre loader animation controller
 app.run(function ($rootScope, $window) {
-	
-	$rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
+    
+    $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
         // Select open modal(s)
         var $openModalSelector = $(".modal.fade.in"); 
         if( ($openModalSelector.data('bs.modal') || {}).isShown == true){
@@ -1443,8 +1690,22 @@ app.run(function ($rootScope, $window) {
                 setTimeout(function () { $('body').removeClass('loaded') }, 500);
 
             });
-    //code added for internet availability		
+    //code added for internet availability      
     $rootScope.IsInternetOnline = navigator.onLine;
+    $rootScope.IsInternetOnline = false;
+
+
+    Offline.check();
+       if (Offline.state === "up"){
+            $rootScope.IsInternetOnline = true;
+            console.log("Conectado a internet");
+
+       }else{
+            $rootScope.IsInternetOnline = false;
+            console.log("No conectado a internet");
+       }
+
+
     $window.addEventListener("offline", function () {
         $rootScope.$apply(function () {
             $rootScope.IsInternetOnline = false;
@@ -1685,5 +1946,4 @@ function ($stateProvider, $urlRouterProvider) {
 
     $urlRouterProvider.otherwise('home');
 }]);
-
 

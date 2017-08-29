@@ -84,7 +84,7 @@
                        ng-model="newUnit.areaTotal"
                        data-error="Campo requerido"
                        required></input>
-                (Hectareas)
+                (manzanas)
             </div>
         </div>
         <div class="clearfix"></div>
@@ -96,7 +96,7 @@
                        ng-model="newUnit.areaCafe"
                        data-error="Campo requerido" 
                        required></input>
-                (Hectareas)
+                (manzanas)
             </div>
         </div>
 
@@ -111,7 +111,7 @@
             </div> -->
         <div class="col-xs-12">
             <div class="form-group">
-                <div class="row" ng-show="variedades">
+                <div class="row" id="variedadesLista" ng-show="variedades">
                     <label class="col-xs-12" style="
                         background-color: #afafaf;
                         color: #fff;
@@ -131,22 +131,32 @@
                       
 
                         <label ng-hide="variedad.name == 'cual?'">
-                            
-                           
-
-
-                            <input type="checkbox" ng-model="variedad.isSelected"> {{variedad.name}}
+                            <input type="checkbox" ng-model="variedad.isSelected"/> {{variedad.name}}
                         </label>
 
                         <input type="text" 
                                class="form-control"
                                placeholder="¿cual?"
-                               ng-model="variedad.VAL" ng-show="variedad.isSelected && variedad.ISUDF"></input>
-
-
-                         
+                               ng-model="variedad.VAL" ng-show="variedad.isSelected && variedad.ISUDF"/>
+                        
                     </div>
-
+                    
+                    
+                </div>
+                <div>
+                    
+                    <label id="lblAdd" class="addBtn pull-left" ng-click="addVariedad()">
+                        <span class="glyphicon glyphicon-plus"></span> Añadir variedad
+                    </label>
+                    <div id="contenedorNueva" class="col-xs-6" style="padding-left: 0px; margin-bottom: 10px; display: none">
+                     <div class="input-group">
+                       <input class="form-control" type="text" name="nuevaVariedad" id="nuevaVariedad" placeholder="ingrese nombre"/>
+                        <span class="input-group-addon">
+                            <span ng-click="addNewvariedad()" class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                        </span>
+                    </div><!-- /input-group -->
+                    </div>
+                   
                 </div>
             </div>
         </div>

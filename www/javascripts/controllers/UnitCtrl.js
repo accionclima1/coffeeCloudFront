@@ -396,12 +396,14 @@ function ($rootScope, $scope, $state, unit, auth, varieties, localStorageService
     if ($rootScope.IsInternetOnline) {
 	    
 	    console.log('app online');
+
 	    
 	    varieties.getAll().then(function (varids) {
 	        variedades = varids.data;
 	        variedades.push({ name: "otro" }, { name: "cual?" });
 	        $scope.variedades = variedades;
 	        localStorageService.set('localVarieties',variedades);
+            PouchDB.SaveVarietiesToPouchDB(variedades);               
 	    });
 
         console.log('app online');
@@ -561,7 +563,7 @@ function ($rootScope, $scope, $state, unit, auth, varieties, localStorageService
 
     muni14.addDepts('departamentos');
     
-
+    
     function wait(ms) {
         var start = new Date().getTime();
         var end = start;
@@ -571,6 +573,7 @@ function ($rootScope, $scope, $state, unit, auth, varieties, localStorageService
     }
 
     function initialize() {
+
         var myLatlng, myLat, myLng;
         var x;
         var ax = [];
@@ -713,6 +716,8 @@ function ($rootScope, $scope, $state, unit, auth, varieties, localStorageService
         map.setCenter(location);
     }
 
+    
+
     // Initialize map
     $scope.mapInit = function () {
         $('.map').collapse('toggle');
@@ -722,7 +727,9 @@ function ($rootScope, $scope, $state, unit, auth, varieties, localStorageService
         }
 
     }
+
   $('#newunitForm').validator();
   $('#newunitForm').validator('update');
+  
   
 }]);

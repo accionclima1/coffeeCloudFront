@@ -1,5 +1,5 @@
-app.controller('ProfileCtrl', ['$http', '$scope', 'auth', 'unit', 'varieties', 'user', 'PouchDB', '$rootScope', 'onlineStatus',
-function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlineStatus) {
+app.controller('ProfileCtrl', ['$http', '$scope', 'auth', 'unit', 'varieties', 'user', 'PouchDB', '$rootScope','localStorageService', 'onlineStatus',
+function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, localStorageService, onlineStatus) {
     var map;
     $scope.isLoggedIn = auth.isLoggedIn;
     $scope.currentUser = auth.currentUser;
@@ -10,22 +10,38 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
     //PouchDB.CreatePouchDB();
 
     $scope.onlineStatus = onlineStatus;
+    
 
     $scope.$watch('onlineStatus.isOnline()', function (online) {
         $scope.online_status_string = online ? 'online' : 'offline';
         onlineStatus = $scope.online_status_string
 
     });
+    /*Ea0707*/
+    //$rootScope.IsInternetOnline = false;
+    console.log("online: ");
+    console.log($rootScope.IsInternetOnline);
     if ($rootScope.IsInternetOnline) {
-        console.log("app online");
+        console.log("app online...");
         varieties.getAll().then(function (varids) {
             variedades = varids.data;
-            variedades.push({ name: "otro" }, { name: "cual?" });
+            //variedades.push({ name: "otro" }, { name: "cual?" });
             $scope.variedades = variedades;
+            localStorageService.set('localVarieties',variedades);
+
+            console.log("data mostrar");            
+            console.log(variedades);
+
+              //Guardamos a nivel local   
+            PouchDB.SaveVarietiesToPouchDB(variedades);   
+            // $("#txtPrueba").val("Data cargado!");    
+
         });
     }
     else {
         console.log("app offline");
+        console.log("Versión prueba de fallos");
+
         PouchDB.GetVarietiesFromPouchDB().then(function (result) {
             if (result.status == 'fail') {
                 $scope.error = result.message;
@@ -39,6 +55,8 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
                     }
                     variedadesArray.push({ name: "otro" }, { name: "cual?" });
                     $scope.variedades = variedadesArray;
+                    console.log("Arrya: - ");
+                    console.log(variedadesArray);
                 }
             }
         });
@@ -613,7 +631,6 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
     }
 
     $scope.someSelected = function (object) {
-
           return Object.keys(object).some(function (key) {
             return object[key];
           });
@@ -625,7 +642,9 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
         $scope.$broadcast('MANAGEUNIT', { unitId: -1 });
         $("#myModal2").modal('show');
         $("#formulariocompleto").css("display", "block");
+        $("#departamentos .optionVacio").remove();
     }
+
 
     $scope.EditOldUnit = function (unit) {
         $scope.unitopmessage = null
@@ -634,6 +653,9 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
         $("#myModal2").modal('show');
     }
 
+ 
+    
+    
     $scope.$on('UNITADDED', function (e, args) {
         $scope.units.push(args.unit);
         if ($rootScope.IsInternetOnline) {
@@ -918,7 +940,6 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, onlin
                     console.log($scope.editUnit);
 
                     console.log($scope.editUnit);
-
                     $scope.prependItem = function () {
 
                         var newItem = {
