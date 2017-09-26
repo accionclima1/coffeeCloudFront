@@ -55,7 +55,8 @@ app.controller('MainCtrl', ['$scope', 'auth', 'roya', 'chats', 'user', 'widget',
 			$('body').addClass('loggedOff');
 		}
 
-		$scope.initMapaincidencia = function(){
+
+		/*$scope.initMapaincidencia = function(){
 			console.log("Inicializando mapa incidencias...");	
 
 			mainInfo.getData().then(function(data){
@@ -117,7 +118,7 @@ app.controller('MainCtrl', ['$scope', 'auth', 'roya', 'chats', 'user', 'widget',
 
 				
 
-		}
+		}*/
 
 
 

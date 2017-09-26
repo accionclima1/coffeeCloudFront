@@ -29,6 +29,7 @@ app.controller('VulneCtrl', [
     }
 
 
+
     if ($rootScope.IsInternetOnline) {
 
 
@@ -51,16 +52,15 @@ app.controller('VulneCtrl', [
 
     $scope.historialVulLaunch = function() {
 
-
-       if ($rootScope.IsInternetOnline) {
+        
+     if ($rootScope.IsInternetOnline) {
         console.log("Con internet");
         console.log(auth.userId());
-
         vulnerabilidades.getUser(auth.userId()).then(function(userhistory){
-         $scope.encuestaHistory = userhistory.data;
-         localStorageService.set('encuestaHistory',userhistory.data);
-         console.log($scope.encuestaHistory);
-     });
+           $scope.encuestaHistory = userhistory.data;
+           localStorageService.set('encuestaHistory',userhistory.data);
+           console.log($scope.encuestaHistory);
+       });
 
     } else {
         console.log("No internet");
@@ -93,11 +93,11 @@ app.controller('VulneCtrl', [
             textoData = "Vulnerabilidad prácticamente ausente. Excelente capacidad adaptativa.";
 
         }else if((valorData>=15)&&(valorData<20)){
-           rangoMin: 15;
-           rangoMax: 19;
-           titulo = "bueno";
-           textoData = "Vulnerabilidad baja. Alta capacidad adaptativa.";
-       }else if((valorData>=8)&&(valorData<15)){
+         rangoMin: 15;
+         rangoMax: 19;
+         titulo = "bueno";
+         textoData = "Vulnerabilidad baja. Alta capacidad adaptativa.";
+     }else if((valorData>=8)&&(valorData<15)){
         rangoMin: 8;
         rangoMax: 14;
         titulo = "medioalto";
@@ -147,6 +147,10 @@ app.controller('VulneCtrl', [
 console.log("Inicio historial Resumen--------------------------");
 console.log($scope.resumenDataHistorial);
 console.log("Fin historial Resumen--------------------------");
+
+ console.log("Esot es algo --------------------------");
+            console.log($scope.algo);
+    console.log("Esot es algo --------------------------");
 
     //$scope.graficarHitorial();
 
@@ -223,34 +227,34 @@ $scope.graficarHistorial = function () {
 
         console.log(listaValores);
 
-    console.log("-------------------");
+        console.log("-------------------");
 
-    console.log(valores);
-    console.log("Todo-------------------");
+        console.log(valores);
+        console.log("Todo-------------------");
 
 
 
-    var data = {
-      labels: rangos,
-      series: listaValores
-  };
+        var data = {
+          labels: rangos,
+          series: listaValores
+      };
 
-  var options = {
-      labelInterpolationFnc: function(value) {
-        return value[0]
-    }
-};
+      var options = {
+          labelInterpolationFnc: function(value) {
+            return value[0]
+        }
+    };
 
-var responsiveOptions = [
-['screen and (min-width: 640px)', {
-    chartPadding: 30,
-    labelOffset: 100,
-    labelDirection: 'explode',
-    labelInterpolationFnc: function(value) {
-      return value;
-  }
-}],
-['screen and (min-width: 1024px)', {
+    var responsiveOptions = [
+    ['screen and (min-width: 640px)', {
+        chartPadding: 30,
+        labelOffset: 100,
+        labelDirection: 'explode',
+        labelInterpolationFnc: function(value) {
+          return value;
+      }
+  }],
+  ['screen and (min-width: 1024px)', {
     labelOffset: 80,
     chartPadding: 20
 }]
@@ -263,88 +267,88 @@ var dataG  = new Chartist.Pie('#datagUnit', data, options, responsiveOptions);
 
 
 $scope.dataImprimir = function(){
- console.log("Si funciona esto -------------------------");
+   console.log("Si funciona esto -------------------------");
   			//console.log($window.localStorage.getItem('encuestas'));
   			console.log($scope.newEncuesta );
   			console.log($scope.listaPreguntas);
   			console.log(jQuery.parseJSON($window.localStorage.getItem('encuestas')));
   			
 
-           vulnerabilidades.getAll(auth.userId()).then(function (data) {
+             vulnerabilidades.getAll(auth.userId()).then(function (data) {
 
-            console.log("Data que deberia mostrarse");
-            console.log(data);
-        }).catch(function (err) {
-         console.log("Hubo un error al cargar los datos");
-         console.log(err);		        
-     });
-    }
-
-
-    function guardarDatosCore(){
-        $scope.resultado=0;
-        var objPreguntas = jQuery('#frmPreguntas').serializeArray();
-        var objEncuesta = {
-            "preguntas":objPreguntas
-        };
-        if(encuestanueva){
-            arrData.push(objEncuesta);
-            encuestanueva=false;
-        }else{
-            arrData[arrData.length-1]=objEncuesta;
+                console.log("Data que deberia mostrarse");
+                console.log(data);
+            }).catch(function (err) {
+               console.log("Hubo un error al cargar los datos");
+               console.log(err);		        
+           });
         }
-        var info = JSON.stringify(arrData);
-        localStorage.setItem('encuestas',info);
-        $scope.listaPreguntas = info;            
-    }  
-
-    $scope.saveDataEncuesta = function () {
-        jQuery('#resultados').css('display','block');
-        jQuery('#resultados').siblings().css('display','none');
-        $window.arrSeccion = [{"label":"Inicio","anchor":"inicio"},{"label":"Preguntas","anchor":"cuestionario"},{"label":"Resultados","anchor":"resultados"}];
 
 
-        var a  =confirm('¿Todos los datos son correctos?');
-        if(a){
-
-            jQuery('.oprespuesta[value="si"]:checked').each(function(value){
-                var numpregunta=jQuery(this).attr('rel');
-                jQuery('#recomienda'+ numpregunta).css('display','block');
-                $scope.resultado= $scope.resultado-1; 
-            });
-            jQuery('#cantrecomienda').html($scope.resultado*-1);
-            jQuery('.oprespuesta[value="medio"]:checked').each(function(value){
-                $scope.resultado = $scope.resultado+0.5;
-            });
-            jQuery('.oprespuesta[value="no"]:checked').each(function(value){
-                $scope.resultado = $scope.resultado+1;
-            });
-            jQuery('#puntajeNum').html($scope.resultado);
-            jQuery('#puntajeNumData').val($scope.resultado);
-            jQuery('tr').children('td').addClass('inactivo');
-            var clase='';
-            if(($scope.resultado>=20)&&($scope.resultado<=25)){
-                clase='rango1';
-            }else if(($scope.resultado>=15)&&($scope.resultado<20)){
-                clase='rango2';
-            }else if(($scope.resultado>=8)&&($scope.resultado<15)){
-                clase='rango3';
-            }else if(($scope.resultado>=1)&&($scope.resultado<8)){
-                clase='rango4';
-            }else if(($scope.resultado>=-6)&&($scope.resultado<1)){
-                clase='rango5';
-            }else if(($scope.resultado>=-13)&&($scope.resultado<-6)){
-                clase='rango6';
-            }else if(($scope.resultado>=-20)&&($scope.resultado<-13)){
-                clase='rango7';
-            }else if(($scope.resultado>=-25)&&($scope.resultado<-20)){
-                clase='rango8';
+        function guardarDatosCore(){
+            $scope.resultado=0;
+            var objPreguntas = jQuery('#frmPreguntas').serializeArray();
+            var objEncuesta = {
+                "preguntas":objPreguntas
+            };
+            if(encuestanueva){
+                arrData.push(objEncuesta);
+                encuestanueva=false;
+            }else{
+                arrData[arrData.length-1]=objEncuesta;
             }
-            jQuery('#'+clase).children('td').removeClass('inactivo');
-            alert('Boleta Guardada');
+            var info = JSON.stringify(arrData);
+            localStorage.setItem('encuestas',info);
+            $scope.listaPreguntas = info;            
+        }  
+
+        $scope.saveDataEncuesta = function () {
+            jQuery('#resultados').css('display','block');
+            jQuery('#resultados').siblings().css('display','none');
+            $window.arrSeccion = [{"label":"Inicio","anchor":"inicio"},{"label":"Preguntas","anchor":"cuestionario"},{"label":"Resultados","anchor":"resultados"}];
+
+
+            var a  =confirm('¿Todos los datos son correctos?');
+            if(a){
+
+                jQuery('.oprespuesta[value="si"]:checked').each(function(value){
+                    var numpregunta=jQuery(this).attr('rel');
+                    jQuery('#recomienda'+ numpregunta).css('display','block');
+                    $scope.resultado= $scope.resultado-1; 
+                });
+                jQuery('#cantrecomienda').html($scope.resultado*-1);
+                jQuery('.oprespuesta[value="medio"]:checked').each(function(value){
+                    $scope.resultado = $scope.resultado+0.5;
+                });
+                jQuery('.oprespuesta[value="no"]:checked').each(function(value){
+                    $scope.resultado = $scope.resultado+1;
+                });
+                jQuery('#puntajeNum').html($scope.resultado);
+                jQuery('#puntajeNumData').val($scope.resultado);
+                jQuery('tr').children('td').addClass('inactivo');
+                var clase='';
+                if(($scope.resultado>=20)&&($scope.resultado<=25)){
+                    clase='rango1';
+                }else if(($scope.resultado>=15)&&($scope.resultado<20)){
+                    clase='rango2';
+                }else if(($scope.resultado>=8)&&($scope.resultado<15)){
+                    clase='rango3';
+                }else if(($scope.resultado>=1)&&($scope.resultado<8)){
+                    clase='rango4';
+                }else if(($scope.resultado>=-6)&&($scope.resultado<1)){
+                    clase='rango5';
+                }else if(($scope.resultado>=-13)&&($scope.resultado<-6)){
+                    clase='rango6';
+                }else if(($scope.resultado>=-20)&&($scope.resultado<-13)){
+                    clase='rango7';
+                }else if(($scope.resultado>=-25)&&($scope.resultado<-20)){
+                    clase='rango8';
+                }
+                jQuery('#'+clase).children('td').removeClass('inactivo');
+                alert('Boleta Guardada');
 	    			//jQuery('input[type="radio"]').prop('checked',false);
-                 var objFecha = new Date();
-                 /*jQuery('#fechaBoleta').val(objFecha.getDate()+'-'+objFecha.getMonth()+'-'+objFecha.getFullYear()+' '+objFecha.getHours()+':'+objFecha.getMinutes());*/
+                   var objFecha = new Date();
+                   /*jQuery('#fechaBoleta').val(objFecha.getDate()+'-'+objFecha.getMonth()+'-'+objFecha.getFullYear()+' '+objFecha.getHours()+':'+objFecha.getMinutes());*/
                    /*jQuery('#Preguntas').css('display','none');
                    jQuery('#resultados').css('display','block');*/
                     //window.location.hash='#resultados';
@@ -375,7 +379,14 @@ $scope.dataImprimir = function(){
                             $scope.error = result.message;
                         }
                         else if (result.status == 'success') {
+                            console.log("------------------------------------------------");
+                            console.log("Data guardado de la encuesta....");
+                            console.log(result.data);
+                            $scope.listaPreguntas.push(result.data); 
+                            console.log("Fin de encuesta...");
+                            console.log("------------------------------------------------");
                             delete result.data["type"];
+
 
                             if ($rootScope.IsInternetOnline) {
 
@@ -412,6 +423,7 @@ $scope.dataImprimir = function(){
                     console.log("Esto es lo que devuelve al guardar");
                     console.log(result);
                     $scope.idEncuesta = result.data._id;
+                    $scope.listaPreguntas.push(result.data);   
 
                     if (result.status == 'fail') {
                         $scope.error = result.message;
@@ -435,9 +447,9 @@ app.factory('vulnerabilidades', ['$http', 'auth', '$window', function ($http, au
 
     o.getAll = function (id) {
 
-        var serviceURL = "http://coffeecloud.centroclima.org/users/";
+        //var serviceURL = "http://coffeecloud.centroclima.org/users/";
         /*ea0707*/
-        //var serviceURL = "http://localhost/users/";
+        var serviceURL = "http://localhost/users/";
 
         return $http.get(serviceURL + id + '/encuestas').success(function (data) {
             return data;
@@ -464,19 +476,19 @@ app.factory('vulnerabilidades', ['$http', 'auth', '$window', function ($http, au
     };
 
     o.getUser = function (userID) {
-       var serviceURL = global.setting.getServiceUrl() + "encuestas/";
-       /*ea0707*/
-       //var serviceURL = "http://localhost/" + "encuestas/";
-       return $http.get(serviceURL + userID).success(function (data) {
+     var serviceURL = global.setting.getServiceUrl() + "encuestas/";
+     /*ea0707*/
+     var serviceURL = "http://localhost/" + "encuestas/";
+     return $http.get(serviceURL + userID).success(function (data) {
         return data;
     });
-   };
+ };
 
-   o.SyncUserLocalPouchDbToServerEncuesta = function (encuesta, id) {
+ o.SyncUserLocalPouchDbToServerEncuesta = function (encuesta, id) {
 
     var serviceURL = global.setting.getServiceUrl() + "SyncUserLocalData/";
     /*ea0707*/
-    //var serviceURL = "http://localhost/" + "SyncUserLocalData/";
+    var serviceURL = "http://localhost/" + "SyncUserLocalData/";
     return $http.post(serviceURL + id + '/encuesta', encuesta, {
         headers: { Authorization: 'Bearer ' + auth.getToken() }
     }).success(function (data) {

@@ -6,12 +6,12 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, local
     $scope.userId = auth.userId;
     $scope.user_Ided = auth.userId();
     var userO = {};
+    $scope.preguntar = 0;
     //$scope.units = [];
     //PouchDB.CreatePouchDB();
 
     $scope.onlineStatus = onlineStatus;
     
-
     $scope.$watch('onlineStatus.isOnline()', function (online) {
         $scope.online_status_string = online ? 'online' : 'offline';
         onlineStatus = $scope.online_status_string
@@ -578,6 +578,8 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, local
         var a = confirm("¿Desea cerrar?")
         if(!a){
             $event.stopPropagation();
+        }else{
+            $scope.preguntar = 0; 
         }
     }
 
@@ -627,8 +629,93 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, local
     }
     
     $scope.CloseUnit = function () {
+        $scope.preguntar = 0;        
         $scope.$broadcast('CLOSEUNIT', { unitId: -1 });
     }
+    $scope.onLoad = function() {
+
+    console.log("------------------------------");
+    console.log("Inicia esta cosa....");
+    console.log("------------------------------");
+    $scope.listo = 0;
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+    $('#myModal').on('shown.bs.modal', function (e) {
+       $scope.preguntar = 1;
+       if ($scope.listo == 1){
+                         document.addEventListener("backbutton", onBackKeyDown, false);
+                    }
+   });
+    $('#myModal2').on('shown.bs.modal', function (e) {
+       $scope.preguntar = 2;
+         if ($scope.listo == 1){
+                         document.addEventListener("backbutton", onBackKeyDown, false);
+                    }
+   });
+    $('#myModal3').on('shown.bs.modal', function (e) {
+       $scope.preguntar = 3;
+         if ($scope.listo == 1){
+                         document.addEventListener("backbutton", onBackKeyDown, false);
+                    }
+   });
+
+    $('#myModal').on('hidden.bs.modal', function (e) {
+      $scope.preguntar = 0;        
+  });
+    $('#myModal2').on('hidden.bs.modal', function (e) {
+      $scope.preguntar = 0;        
+  });
+    $('#myModal3').on('hidden.bs.modal', function (e) {
+      $scope.preguntar = 0;        
+  });
+    $('.close').on('click', function (e) {
+      $scope.preguntar = 0;        
+  });
+
+
+}
+
+    // device APIs are available
+    //
+    function onDeviceReady() {
+        // Register the event listener
+        console.log("--------------------------------inicializado");
+        $scope.listo = 1;
+        document.addEventListener("backbutton", onBackKeyDown, false);
+        document.addEventListener("offline", onOffline, false);
+        document.addEventListener("online", onOnline, false);
+    }
+
+    function onOffline() {
+       $rootScope.IsInternetOnline = false;
+    }
+
+    function onOnline() {
+        $rootScope.IsInternetOnline = true;
+    }
+
+    function onBackKeyDown() {
+        if (($scope.preguntar != 0) && ($scope.preguntar != undefined) ){
+                   var a = confirm("¿Desea cerrar?")
+                   if(a == true){
+                    if ($scope.listo == 1){
+                        document.removeEventListener("backbutton", onBackKeyDown, false);
+                    }
+                    if ($scope.preguntar == 1){
+                         $('#myModal').modal('hide');
+                    }
+                     if ($scope.preguntar == 2){
+                         $('#myModal2').modal('hide');
+                    }
+                     if ($scope.preguntar == 3){
+                         $('#myModal3').modal('hide');
+                    }
+                    $scope.preguntar = 0;  
+                   }
+
+                }
+    }
+
 
     $scope.someSelected = function (object) {
           return Object.keys(object).some(function (key) {
@@ -650,7 +737,9 @@ function ($http, $scope, auth, unit, varieties, user, PouchDB, $rootScope, local
         $scope.unitopmessage = null
         $scope.modalText = "Editar: " + unit.nombre;
         $scope.$broadcast('MANAGEUNIT', { unitId: unit._id });
+        $("#departamentos .optionVacio").remove();
         $("#myModal2").modal('show');
+
     }
 
  
