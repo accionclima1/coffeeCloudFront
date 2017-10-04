@@ -1408,7 +1408,7 @@
 								    <div class="modal-content">
 								      <div class="modal-header">
 								        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-								        <h4 class="modal-title" id="myModalLabel">Calculos anteriores</h4>
+								        <h4 class="modal-title" id="myModalLabel">Cálculos anteriores</h4>
 								      </div>
 								      <div class="modal-body">
 									      <h6 ng-show="royaHistory.length == 0">¡No hay cálculos todavía!</h6>
@@ -1507,6 +1507,7 @@
 									<span ng-show="test.incidencia > 20 && test.incidencia < 51 ">{{methodsMonth.grade3}}</span>
 									<span ng-show="test.incidencia > 50 ">{{methodsMonth.grade3}}</span>
 								</p>
+								<button class="btn btn-primary" ng-click="ClearTest()">Nuevo cálculo</button>
 								<a href="#/support" class="btn btn-primary">Solicitar Asesoría Técnica</a>
 							</div>
 							
@@ -1521,6 +1522,7 @@
 									<span ng-show="test.incidencia > 20 && test.incidencia < 51 ">{{methodsMonth.grade3}}</span>
 									<span ng-show="test.incidencia > 50 ">{{methodsMonth.grade3}}</span>
 								</p>
+								<button class="btn btn-primary" ng-click="ClearTest()">Nuevo cálculo</button>
 								<a href="#/support" class="btn btn-primary">Solicitar Asesoría Técnica</a>
 							</div>
 							
@@ -1985,26 +1987,26 @@
 										<div class="panel panel-default" ng-repeat="encuesta in resumenDataHistorial">
 											<div class="panel-heading" role="tab" id="{{ 'heading-' + encuesta.id }}">
 
-											  <h5 class="panel-title" style="text-align: left;">
-										        <a style="text-decoration:none; " role="button" data-toggle="collapse" data-parent="#accordion" data-target="{{ '#collapse-' + encuesta.id }}" aria-expanded="false" aria-controls="{{ 'collapse-' + encuesta.id }}">
-										         <small> {{ encuesta.fecha | date : "MMM d, y h:mm:ss a" }}</small> - {{encuesta.entrevistado}} 
+												<h5 class="panel-title" style="text-align: left;">
+													<a style="text-decoration:none; " role="button" data-toggle="collapse" data-parent="#accordion" data-target="{{ '#collapse-' + encuesta.id }}" aria-expanded="false" aria-controls="{{ 'collapse-' + encuesta.id }}">
+														<small> {{ encuesta.fecha | date : "MMM d, y h:mm:ss a" }}</small> - {{encuesta.entrevistado}} 
 
-										         <span class="badge" style="margin-left:5px;" id="cantrecomienda">{{encuesta.valor}}</span>
+														<span class="badge" style="margin-left:5px;" id="cantrecomienda">{{encuesta.valor}}</span>
 
 
-										        </a>
-										      </h5>
+													</a>
+												</h5>
 
 
 											</div>
-											 <div id="{{ 'collapse-' +  encuesta.id}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="{{ 'collapse-' + encuesta.id }}">
-										      <div class="panel-body" style="text-align: left;">
-										      	Resultado:<strong> {{encuesta.title}}</strong>
+											<div id="{{ 'collapse-' +  encuesta.id}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="{{ 'collapse-' + encuesta.id }}">
+												<div class="panel-body" style="text-align: left;">
+													Resultado:<strong> {{encuesta.title}}</strong>
 
-										      	<p>{{encuesta.texto}}</p>	      										        	 
-										     									      
-										      </div>
-										    </div>
+													<p>{{encuesta.texto}}</p>	      										        	 
+													
+												</div>
+											</div>
 										</div>					
 									</div>
 								</div>
@@ -4007,7 +4009,7 @@ jQuery(document).ready(function(){
 
 
 
-	if(localStorage.encuestas!=null){
+	if(localStorage.encuestas !=null){
 /*arrData = [];
 localStorage.removeItem('encuestas');*/
 arrData=JSON.parse(localStorage.encuestas);
@@ -4017,6 +4019,7 @@ jQuery('#nomUsuario').val(localStorage.usuario);
 	//localStorage.setItem('usuario','');
     //localStorage.setItem('encuestas',arrData);
 }
+
 jQuery.each(deptos,function(key,value){
 	jQuery('#nomDepto').append('<option value="'+key+'">'+key+'</option>')
 })

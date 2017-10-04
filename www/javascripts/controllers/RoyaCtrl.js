@@ -24,8 +24,7 @@ app.controller('RoyaCtrl', [
 		$scope.modal.number="";
 		$scope.modal.numberSubmitted=false;
 		$scope.user_Ided = auth.userId();
-		
-		
+				
 		
 		$scope.onlineStatus = onlineStatus;
 
@@ -36,6 +35,7 @@ app.controller('RoyaCtrl', [
 		});
 
 		$scope.ClearTest = function(){
+            console.log("Reinicar");
 			$scope.IsErrorInfrmRoyaAddPlanta=false;
 			$scope.IsErrorInfrmRoyaAddPlantaLeaf=false;
 			$scope.IsErrorInfrmRoyaAddPlantaLeafAffectedLeaf=false;
@@ -502,6 +502,8 @@ $scope.graficarHitorial = function () {
         var data = $scope.royaHistory;
         var fechas = [];
         var puntosIncidencia = [];
+        var listaUnidades = [];
+        var puntosIncidenciaPorUnidad = [];
 
 
         for (var i = 0; i < data.length; i++) {
@@ -514,13 +516,41 @@ $scope.graficarHitorial = function () {
 
         }
 
+        //Extraemos el listado de unidades involucradas
+        for (var i = 0; i < puntosIncidencia.length; i++) {
+            if (!listaUnidades.contains(puntosIncidencia[i].meta)){
+                listaUnidades.push(puntosIncidencia[i].meta);
+            }
+        }
+
+        //Regeneramos el array para graficar cada unidad como línea
+        for (var i = 0; i < listaUnidades.length; i++) {
+           for (var j = 0; j < puntosIncidencia.length; j++) {
+            if (listaUnidades[i].localeCompare(puntosIncidencia[j].meta) == 0){
+                if (puntosIncidenciaPorUnidad[i] == undefined){
+                    puntosIncidenciaPorUnidad[i] = [];
+                    for (var y = 0; y < j; y++) {
+                         puntosIncidenciaPorUnidad[i].push(null);
+                    }
+                }
+
+                puntosIncidenciaPorUnidad[i].push(puntosIncidencia[j]);
+            }
+        }
+        }
+
+        console.log("listaUnidades-------------------");
+        console.log(listaUnidades);
+
         console.log(fechas);
         console.log(puntosIncidencia);
+        console.log("Todo-------------------");
+        console.log(puntosIncidenciaPorUnidad);
 
 
         var dataG = new Chartist.Line('#datagUnit', {
           labels: fechas,
-          series: [puntosIncidencia]
+          series: puntosIncidenciaPorUnidad
       }, {
           fullWidth: true,
 
